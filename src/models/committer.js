@@ -1,6 +1,8 @@
 class Committer {
-    Committer(author, email) {
-        this.author = author
+    constructor(name, email) {
+        this.name = name
         this.email = email
     }
 }
+
+export default Committer
