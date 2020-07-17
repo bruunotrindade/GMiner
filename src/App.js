@@ -7,27 +7,13 @@ const repos = new Repository("/home/brunotrindade/Reps/atom")
 
 repos.loadMergesData()
 
-repos.merges.forEach((merge) => {
+//repos.merges[0].redoMerge()
 
-    /*merge.changedFIles[0].forEach((file) => {
-        if(file.oldNames.length > 0)
-        {
-            console.log(merge)
-            console.log(file)
-        }    
-    })
-
-    merge.changedFIles[1].forEach((file) => {
-        if(file.oldNames.length > 0)
-        {
-            console.log(merge)
-            console.log(file)
-        }    
-    })*/
+/*repos.merges.forEach((merge) => {
 
     console.log(merge)
     console.log(merge.committers[0])
     console.log(merge.committers[1])
     console.log(merge.changedFiles[0]);
     console.log(merge.changedFiles[1]);
-})
+})*/

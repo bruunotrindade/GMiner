@@ -1,4 +1,4 @@
-class ChangedFile {
+class File {
 
     constructor(fullName, oldNames=[]) {
         this.fullName = fullName
@@ -12,4 +12,4 @@ class ChangedFile {
     }
 }
 
-export default ChangedFile
+export default File

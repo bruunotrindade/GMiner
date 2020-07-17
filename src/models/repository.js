@@ -19,14 +19,17 @@ class Repository {
     }
     
     runGitCommand(command) {
+        var response
         try {
-            var response = execSync("git " + command, { cwd: this.dir }).toString("utf8")
-            return response.substring(0, response.lastIndexOf("\n"))
+            response = execSync("git " + command, { cwd: this.dir }).toString("utf8")
         }
         catch(e) {
-            console.error(e);
-            return ""
+            console.error("/==================/ ERRO /==================/");
+            console.error(e.output.toString("utf8"))
+            console.error("/============================================/")
+            response = e.output.toString("utf8").substring(1)
         }
+        return response.substring(0, response.lastIndexOf("\n"))
     }
     
     runGitCommandArray(command) {
@@ -35,7 +38,7 @@ class Repository {
 
     loadMergesData() {
         const self = this
-        this.merges = ["84bd000d025591c07daa8845db0605c7ec80fe47"].map((merge) => {
+        this.merges = this.merges.map((merge) => {
             return new Merge(self, merge)
         })
     }

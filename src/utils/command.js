@@ -1,5 +1,5 @@
 const { execSync } = require("child_process");
-
+/*
 function runGitCommand(dir, command) {
     try {
         var response = execSync("git " + command, { cwd: dir }).toString("utf8")
@@ -20,4 +20,4 @@ function runGitCommandArray(dir, command) {
     return runGitCommand(dir, command).split("\n")
 }
 
-export { runGitCommand, runGitCommandArray }
+export { runGitCommand, runGitCommandArray }*/
