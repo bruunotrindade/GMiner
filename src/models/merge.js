@@ -1,10 +1,27 @@
 import Committer from '../models/committer'
 import File from './file'
+import Commit from './commit'
+import { secondsToDays } from '../utils/time'
 
 class Merge {
     constructor(repos, hash) {
-        const loadParents = () => repos.runGitCommand(`log --pretty=%P -n 1 ${hash}`).split(" ")
-        const loadBase = () => repos.runGitCommand(`merge-base ${this.parents[0]} ${this.parents[1]}`)
+        const loadParents = () => {
+            const hashes = repos.runGitCommand(`log --pretty=%P -n 1 ${hash}`).split(" ")
+            return [new Commit(repos, hashes[0], true), new Commit(repos, hashes[1], true)]
+        }
+        const loadBase = () => {
+            const baseHash = repos.runGitCommand(`merge-base ${this.parents[0]} ${this.parents[1]}`)
+            return new Commit(repos, baseHash, true)
+        }
+        
+        //this.hash = hash
+        this.commit = new Commit(repos, hash, true)
+        this.repos = repos
+        this.parents = loadParents()
+        this.base = loadBase()
+    }
+
+    loadAttributes(timestamp=false, commits=false, committers=false, changedFiles=false, branchingTime=false, mergeTime=false) {
         const loadTimestamp = () => new Date(repos.runGitCommand(`log -1 --pretty=format:%ci ${hash}`))
         const loadCommitters = (branch) => { 
             var committers = []
@@ -55,20 +72,78 @@ class Merge {
             })
             return changedFiles
         }
-        
-        this.hash = hash
-        this.repos = repos
-        this.parents = loadParents()
-        this.base = loadBase()
-        this.timestamp = loadTimestamp()
-        this.committers = [loadCommitters(0), loadCommitters(1)]
-        this.changedFiles = [loadChangedFiles(0), loadChangedFiles(1)]
 
-        this.redoMerge()
-    }
+        const loadBranchingTime = () => {
+            const commitsAfterBase = [this.getAfterBaseCommit(0), this.getAfterBaseCommit(1)]
+            const beginTime = Math.max(commitsAfterBase[0].unixTime, commitsAfterBase[1].unixTime)
+            const endTime = Math.max(this.parents[0].unixTime, this.parents[1].unixTime)
 
-    loadAttributes() {
+            return secondsToDays(endTime-beginTime)
+        }
+
+        const loadMergeTime = () => {
+            return secondsToDays(this.base.unixTime-this.commit.unixTime)
+        }
+
+        // If timestamp must be loaded
+        this.timestamp = timestamp ? loadTimestamp() : null
+
+        // If committers must be loaded
+        if(committers) {
+            this.committers = [loadCommitters(0), loadCommitters(1)]
+
+            // Comparing and checking committers intersection
+            const checkCommittersIntersection = () => {
+                var sameCount = 0
+                this.committers[0].forEach((committer) => {
+                    const sameCommitter = this.committers[1].find((same) => { return same.name == committer.name || same.email == committer.email })
+    
+                    if(sameCommitter)
+                        sameCount += 1
+                })
+                if(sameCount == this.committers[0].length || sameCount == this.committers[1].length)
+                    return "ALL"
+                else if(sameCount == 0)
+                    return "NONE"
+                else
+                    return "SOME"
+            }
+            this.committersIntersection = checkCommittersIntersection()
+        }
         
+        // If changed files must be loaded
+        if(changedFiles) {
+            this.changedFiles = changedFiles ? [loadChangedFiles(0), loadChangedFiles(1)] : null
+            
+            // Comparing and checking changed files intersection
+            const checkChangedFilesIntersection = () => {
+                var sameCount = 0
+                this.changedFiles[0].forEach((changedFile) => {
+                    const sameFile = this.changedFiles[1].find((same) => {
+                        return same.fullName == changedFile.fullName || same.oldNames.includes(changedFile.fullName)
+                    })
+
+                    if(sameFile)
+                        sameCount += 1
+                })
+                if(sameCount == this.changedFiles[0].length || sameCount == this.changedFiles[1].length)
+                    return "ALL"
+                else if(sameCount == 0)
+                    return "NONE"
+                else
+                    return "SOME"
+            }
+            this.changedFilesIntersection = checkChangedFilesIntersection()
+        }
+
+        // If branching time must be loaded
+        this.branchingTime = branchingTime ? loadBranchingTime() : null
+
+        // If merge time must be loaded
+        this.mergeTime = mergeTime ? loadMergeTime() : null
+
+        //this.redoMerge()
+
     }
 
     redoMerge() {
@@ -98,6 +173,21 @@ class Merge {
             })
         }
     }
+
+    getAfterBaseCommit(branch)
+	{
+        const parent = this.parents[branch]
+        const commits = this.repos.runGitCommandArray(`rev-list --ancestry-path --reverse ${this.base.hash}..${parent}`)
+        
+        var afterBase = null
+        commits.forEach((commit) => {
+            afterBase = new Commit(this.repos, commit, true)
+
+            if(afterBase.unixTime <= parent.unixTime && afterBase.unixTime > this.base.unixTime)
+                return
+        })
+        return afterBase
+	}
 }
 
 export default Merge
