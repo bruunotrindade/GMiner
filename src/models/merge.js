@@ -10,22 +10,25 @@ class Merge {
             return [new Commit(repos, hashes[0], true), new Commit(repos, hashes[1], true)]
         }
         const loadBase = () => {
-            const baseHash = repos.runGitCommand(`merge-base ${this.parents[0]} ${this.parents[1]}`)
+            const baseHash = repos.runGitCommand(`merge-base ${this.parents[0].hash} ${this.parents[1].hash}`)
             return new Commit(repos, baseHash, true)
         }
         
-        //this.hash = hash
         this.commit = new Commit(repos, hash, true)
         this.repos = repos
         this.parents = loadParents()
         this.base = loadBase()
+
+        this.isFastForward = (this.base.hash == this.parents[0].hash || this.base.hash == this.parents[1].hash)
     }
 
     loadAttributes(timestamp=false, commits=false, committers=false, changedFiles=false, branchingTime=false, mergeTime=false) {
-        const loadTimestamp = () => new Date(repos.runGitCommand(`log -1 --pretty=format:%ci ${hash}`))
+        const self = this
+        
+        const loadTimestamp = () => new Date(this.repos.runGitCommand(`log -1 --pretty=format:%ci ${this.commit.hash}`))
         const loadCommitters = (branch) => { 
             var committers = []
-            repos.runGitCommandArray(`log --no-merges --pretty='%an\\%ae' ${this.base}..${this.parents[branch]}`).forEach((line) => {
+            self.repos.runGitCommandArray(`log --no-merges --pretty='%an\\%ae' ${this.base.hash}..${this.parents[branch].hash}`).forEach((line) => {
                 const str = line.split("\\")
                 if(!committers.find((el) => { return el.email == str[1] || el.name == str[0] }))
                     committers.push(new Committer(str[0], str[1]))
@@ -33,7 +36,7 @@ class Merge {
             return committers
         }
         const loadChangedFiles = (branch) => {
-            const lines = repos.runGitCommandArray(`log --stat --oneline --reverse ${this.base}..${this.parents[branch]}`)
+            const lines = self.repos.runGitCommandArray(`log --stat --oneline --reverse ${this.base.hash}..${this.parents[branch].hash}`)
 
             // Filtering all statistic lines and removing repeated lines
             var fileLines = new Set(lines.filter((line) => {
@@ -75,15 +78,18 @@ class Merge {
 
         const loadBranchingTime = () => {
             const commitsAfterBase = [this.getAfterBaseCommit(0), this.getAfterBaseCommit(1)]
-            const beginTime = Math.max(commitsAfterBase[0].unixTime, commitsAfterBase[1].unixTime)
+
+            const beginTime = Math.min(commitsAfterBase[0].unixTime, commitsAfterBase[1].unixTime)
             const endTime = Math.max(this.parents[0].unixTime, this.parents[1].unixTime)
 
             return secondsToDays(endTime-beginTime)
         }
 
         const loadMergeTime = () => {
-            return secondsToDays(this.base.unixTime-this.commit.unixTime)
+            return secondsToDays(this.commit.unixTime-this.base.unixTime)
         }
+
+        const loadCommitsTotal = (branch) => this.repos.runGitCommand(`rev-list --count ${this.base.hash}..${this.parents[branch].hash}`)
 
         // If timestamp must be loaded
         this.timestamp = timestamp ? loadTimestamp() : null
@@ -142,15 +148,19 @@ class Merge {
         // If merge time must be loaded
         this.mergeTime = mergeTime ? loadMergeTime() : null
 
+        // If commits numbers must be loaded
+        this.commits = commits ? [loadCommitsTotal(0), loadCommitsTotal(1)] : null
+
+
         //this.redoMerge()
 
     }
 
     redoMerge() {
         this.repos.runGitCommand("reset --hard")
-        this.repos.runGitCommand(`checkout -f ${this.parents[0]}`)
+        this.repos.runGitCommand(`checkout -f ${this.parents[0].hash}`)
 
-        const mergeResponse = this.repos.runGitCommandArray(`merge --no-commit ${this.parents[1]}`)
+        const mergeResponse = this.repos.runGitCommandArray(`merge --no-commit ${this.parents[1].hash}`)
         
         this.conflict = false
         this.conflictedFiles = []
@@ -176,15 +186,16 @@ class Merge {
 
     getAfterBaseCommit(branch)
 	{
-        const parent = this.parents[branch]
+        const parent = this.parents[branch].hash
         const commits = this.repos.runGitCommandArray(`rev-list --ancestry-path --reverse ${this.base.hash}..${parent}`)
+
         
         var afterBase = null
         commits.forEach((commit) => {
             afterBase = new Commit(this.repos, commit, true)
-
+            
             if(afterBase.unixTime <= parent.unixTime && afterBase.unixTime > this.base.unixTime)
-                return
+            return
         })
         return afterBase
 	}

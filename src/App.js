@@ -7,7 +7,15 @@ const repos = new Repository("/home/brunotrindade/Reps/atom")
 
 repos.loadMergesData()
 
-//repos.merges[0].redoMerge()
+repos.merges.forEach(merge => {
+    if(!merge.isFastForward) {
+        merge.loadAttributes(true, true, true, true, true, true)
+        console.log(`[${merge.commit.hash.substring(0, 6)}] Merge explored`)
+        //console.log(merge)
+    }
+    else
+        console.log(`[${merge.commit.hash.substring(0, 6)}] Merge fast forward`)
+})
 
 /*repos.merges.forEach((merge) => {
 

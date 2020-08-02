@@ -20,6 +20,7 @@ class Repository {
     
     runGitCommand(command) {
         var response
+        //console.log(command)
         try {
             response = execSync("git " + command, { cwd: this.dir }).toString("utf8")
         }
@@ -29,7 +30,8 @@ class Repository {
             console.error("/============================================/")
             response = e.output.toString("utf8").substring(1)
         }
-        return response.substring(0, response.lastIndexOf("\n"))
+        const last = response.lastIndexOf("\n")
+        return response.substring(0, last == -1 ? response.length : last)
     }
     
     runGitCommandArray(command) {
@@ -38,7 +40,7 @@ class Repository {
 
     loadMergesData() {
         const self = this
-        this.merges = this.merges.map((merge) => {
+        this.merges = this.merges.slice(0, 5).map((merge) => {
             return new Merge(self, merge)
         })
     }
