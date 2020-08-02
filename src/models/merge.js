@@ -162,6 +162,9 @@ class Merge {
 
         const mergeResponse = this.repos.runGitCommandArray(`merge --no-commit ${this.parents[1].hash}`)
         
+        // Cleaning untracked files
+        this.repos.runGitCommand("clean -df")
+
         this.conflict = false
         this.conflictedFiles = []
         // If merge caused conflict
