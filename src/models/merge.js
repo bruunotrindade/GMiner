@@ -3,7 +3,10 @@ import File from './file'
 import Commit from './commit'
 import { secondsToDays } from '../utils/time'
 
+const MERGE_DIDNT_DONE = "redoMerge() must be ran before using this method.";
+
 class Merge {
+
     constructor(repos, hash) {
         const loadParents = () => {
             const hashes = repos.runGitCommand(`log --pretty=%P -n 1 ${hash}`).split(" ")
@@ -153,10 +156,9 @@ class Merge {
 
 
         //this.redoMerge()
-
     }
 
-    redoMerge() {
+    redoMerge(chunks=false) {
         this.repos.runGitCommand("reset --hard")
         this.repos.runGitCommand(`checkout -f ${this.parents[0].hash}`)
 
@@ -176,22 +178,72 @@ class Merge {
                 // [add/add or content] conflict message
                 if(line.includes("Merge conflict in")) {
                     const filename = line.split("Merge conflict in ")[1]
-                    this.conflictedFiles.push(new File(filename))
+                    const file = new File(filename)
+                    file.conflictType = "UPDATE"
+                    this.conflictedFiles.push(file)
                 }
                 // [modify/delete] conflict message
                 else if(line.includes("(modify/delete)")) {
                     const filename = line.match(/(?<!:)(\w*\-*\.*\/?)*(?= deleted)/)[0]
-                    this.conflictedFiles.push(new File(filename))
+                    const file = new File(filename)
+                    file.conflictType = "DELETE"
+                    this.conflictedFiles.push(file)
                 }
             })
         }
     }
 
-    getAfterBaseCommit(branch)
-	{
+    countChunks() {
+        if(this.conflict) {
+            this.chunks = 0
+            this.conflictedFiles.forEach(file => {
+                const diffLines = this.repos.runGitCommandArray(`diff ${file.fullName}`)
+                file.chunks = {
+                    "diffLines": diffLines, 
+                    "value": diffLines.filter(line => { return line.replace("+", "").startsWith("=======") }).length
+                }
+                this.chunks += file.chunks['value']
+            })
+            
+            /*const diffLines = this.repos.runGitCommandArray("diff")
+            this.chunks = diffLines.filter(line => { return line.replace("+", "").startsWith("=======") }).size()
+            */
+        }
+        else if(this.conflict == null)
+            throw MERGE_DIDNT_DONE
+    }
+
+    checkSelfConflict(branch) {
+        if(this.conflict) {
+            this.conflictedFiles.forEach(file => {
+                if(file.conflictType == "DELETE") {
+                    let tagStatus = 0
+                    const tags = ["", "+<<<<<<<", "+=======", "+>>>>>>>"]
+                    const commitsModified = this.repos.runGitCommandArray(`log --pretty=format:%H ${this.base.hash}^..${this.parents[branch].hash} ${file.fullName}`)
+                        commitsModified.forEach(hash => {
+                            const diffLines = this.repos.runGitCommandArray(`diff ${hash} ${file.fullName}`)
+                            diffLines.forEach(line => {
+                                for(tagStatus = 1; tagStatus < 4; tagStatus++)
+                                    if(line.startsWith(tags[tagStatus]))
+                                        break;
+
+                                if(branch == tagStatus && !line.startsWith("+")) {
+                                    
+                                }
+                            })                            
+                        })
+                    }
+                }
+            })
+        }
+        else if(this.conflict == null)
+            throw MERGE_DIDNT_DONE
+    }
+
+
+    getAfterBaseCommit(branch) {
         const parent = this.parents[branch].hash
         const commits = this.repos.runGitCommandArray(`rev-list --ancestry-path --reverse ${this.base.hash}..${parent}`)
-
         
         var afterBase = null
         commits.forEach((commit) => {
