@@ -4,6 +4,7 @@ import Commit from './commit'
 import { secondsToDays } from '../utils/time'
 
 const MERGE_DIDNT_DONE = "redoMerge() must be ran before using this method.";
+const CONFLICT_TAGS = ["<<<<<<<", "=======", ">>>>>>>"]
 
 class Merge {
 
@@ -155,7 +156,7 @@ class Merge {
         this.commits = commits ? [loadCommitsTotal(0), loadCommitsTotal(1)] : null
 
 
-        //this.redoMerge()
+        this.redoMerge(true)
     }
 
     redoMerge(chunks=false) {
@@ -163,7 +164,6 @@ class Merge {
         this.repos.runGitCommand(`checkout -f ${this.parents[0].hash}`)
 
         const mergeResponse = this.repos.runGitCommandArray(`merge --no-commit ${this.parents[1].hash}`)
-        
         // Cleaning untracked files
         this.repos.runGitCommand("clean -df")
 
@@ -172,7 +172,7 @@ class Merge {
         // If merge caused conflict
         if(mergeResponse[mergeResponse.length-1].startsWith("Automatic merge failed;")) {
             this.conflict = true
-            console.log(mergeResponse);
+            //console.log(mergeResponse);
             mergeResponse.forEach((line) => {
 
                 // [add/add or content] conflict message
@@ -191,23 +191,50 @@ class Merge {
                 }
             })
         }
+
+        if(chunks) {
+            this.loadChunks();
+            this.checkSelfConflict(0)
+            this.checkSelfConflict(1)
+
+            this.conflictedFiles.forEach(file => {
+                console.log(`arquivo = ${file.fullName}`)
+                console.log(file.chunks)
+            })
+        }
     }
 
-    countChunks() {
+    loadChunks() {
         if(this.conflict) {
             this.chunks = 0
             this.conflictedFiles.forEach(file => {
+                file.chunks = []
                 const diffLines = this.repos.runGitCommandArray(`diff ${file.fullName}`)
-                file.chunks = {
-                    "diffLines": diffLines, 
-                    "value": diffLines.filter(line => { return line.replace("+", "").startsWith("=======") }).length
+                let tagStatus = 0
+                let chunk = {
+                    "lines": [],
+                    "authors": [null, null]
                 }
-                this.chunks += file.chunks['value']
+                diffLines.forEach(line => {
+                    if(line.replace(/\+/g, "").startsWith(CONFLICT_TAGS[0])) {
+                        tagStatus = 1;
+                    }
+                    else if(line.replace(/\+/g, "").startsWith(CONFLICT_TAGS[2])) {
+                        tagStatus = 0;
+                        chunk['lines'].push(line)
+                        file.chunks.push(chunk)
+                        chunk = {
+                            "lines": [],
+                            "authors": [null, null]
+                        }
+                    }
+                    
+                    if(tagStatus == 1)
+                        chunk['lines'].push(line)
+                })
+                this.chunks += file.chunks.length
+                console.log(`${file.fullName} => ${file.chunks.length} chunks`)
             })
-            
-            /*const diffLines = this.repos.runGitCommandArray("diff")
-            this.chunks = diffLines.filter(line => { return line.replace("+", "").startsWith("=======") }).size()
-            */
         }
         else if(this.conflict == null)
             throw MERGE_DIDNT_DONE
@@ -215,24 +242,41 @@ class Merge {
 
     checkSelfConflict(branch) {
         if(this.conflict) {
+            console.log(`VERIFICANDO BRANCH ${branch}`)
             this.conflictedFiles.forEach(file => {
-                if(file.conflictType == "DELETE") {
-                    let tagStatus = 0
-                    const tags = ["", "+<<<<<<<", "+=======", "+>>>>>>>"]
+                if(file.conflictType != "DELETE") {
                     const commitsModified = this.repos.runGitCommandArray(`log --pretty=format:%H ${this.base.hash}^..${this.parents[branch].hash} ${file.fullName}`)
-                        commitsModified.forEach(hash => {
-                            const diffLines = this.repos.runGitCommandArray(`diff ${hash} ${file.fullName}`)
-                            diffLines.forEach(line => {
-                                for(tagStatus = 1; tagStatus < 4; tagStatus++)
-                                    if(line.startsWith(tags[tagStatus]))
-                                        break;
+                    commitsModified.forEach(hash => {
+                        let tagStatus = -1
+                        let chunkId = 0
+                        if(file.fullName == "frontend/src/pages/publics/EmailValidation.js")
+                            console.log(hash)
+                        const diffLines = this.repos.runGitCommandArray(`diff ${hash} ${file.fullName}`)
+                        diffLines.forEach((line, index) => {
+                            if(file.fullName == "frontend/src/pages/publics/EmailValidation.js" && chunkId == 0 && (tagStatus == 0 || tagStatus == 1))
+                                console.log(line)
 
-                                if(branch == tagStatus && !line.startsWith("+")) {
-                                    
+                            for(let tagStatusI = 0; tagStatusI < 3; tagStatusI++)
+                                if(line.startsWith("+" + CONFLICT_TAGS[tagStatusI])) {
+                                    tagStatus = tagStatusI
+                                    if(tagStatus == 2) {
+                                        chunkId += 1
+                                        tagStatus = -1
+                                    }
+                                    break;
                                 }
-                            })                            
-                        })
-                    }
+
+                            if(chunkId < file.chunks.length) {
+                                if(branch == tagStatus && !line.startsWith("+") && file.chunks[chunkId]['authors'][branch] == null) {
+                                    file.chunks[chunkId]['authors'][branch] = this.repos.getCommitAuthor(hash)
+                                    if(branch == 0) {
+                                        //console.log(`linha ${index} = ${line}`)
+                                        //console.log(`CHUNK ${chunkId} setado =>`, file.chunks[chunkId])
+                                    }
+                                }
+                            }
+                        })                            
+                    })
                 }
             })
         }

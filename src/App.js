@@ -1,7 +1,7 @@
 import { runGitCommand } from './utils/command'
 import Repository from './models/repository'
 
-const repos = new Repository("/home/brunotrindade/Reps/atom")
+const repos = new Repository("/home/brunotrindade/navigo")
 
 //console.log(repos)
 

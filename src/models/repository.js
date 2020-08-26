@@ -22,12 +22,12 @@ class Repository {
         var response
         //console.log(command)
         try {
-            response = execSync("git " + command, { cwd: this.dir }).toString("utf8")
+            response = execSync("git " + command, { cwd: this.dir, stdio: 'pipe' }).toString("utf8")
         }
         catch(e) {
-            console.error("/==================/ ERRO /==================/");
+            /*console.error("/==================/ ERRO /==================/");
             console.error(e.output.toString("utf8"))
-            console.error("/============================================/")
+            console.error("/============================================/")*/
             response = e.output.toString("utf8").substring(1)
         }
         const last = response.lastIndexOf("\n")
@@ -40,9 +40,13 @@ class Repository {
 
     loadMergesData() {
         const self = this
-        this.merges = this.merges.slice(0, 5).map((merge) => {
+        this.merges = this.merges.slice(0, 16).map((merge) => {
             return new Merge(self, merge)
         })
+    }
+
+    getCommitAuthor(hash) {
+        return this.runGitCommand(`log --pretty=format:%an -1 ${hash}`)
     }
 }
 
