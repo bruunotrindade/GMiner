@@ -213,19 +213,30 @@ class Merge {
                 let tagStatus = 0
                 let chunk = {
                     "lines": [],
-                    "authors": [null, null]
+                    "authors": [null, null],
+                    "removedPart": -1
                 }
-                diffLines.forEach(line => {
+                diffLines.forEach((line, index) => {
                     if(line.replace(/\+/g, "").startsWith(CONFLICT_TAGS[0])) {
                         tagStatus = 1;
+
+                        //Caso a próxima linha seja o marcador do meio, então a parte 1 foi removida
+                        if(diffLines[index+1].startsWith(CONFLICT_TAGS[1]))
+                            chunk['removedPart'] = 1
                     }
                     else if(line.replace(/\+/g, "").startsWith(CONFLICT_TAGS[2])) {
                         tagStatus = 0;
+
+                        //Caso a linha anterior seja o marcador do meio, então a parte 2 foi removida
+                        if(diffLines[index-1].startsWith(CONFLICT_TAGS[1]))
+                            chunk['removedPart'] = 2
+
                         chunk['lines'].push(line)
                         file.chunks.push(chunk)
                         chunk = {
                             "lines": [],
-                            "authors": [null, null]
+                            "authors": [null, null],
+                            "removedPart": -1
                         }
                     }
                     
@@ -251,6 +262,13 @@ class Merge {
                         let chunkId = 0
                         if(file.fullName == "frontend/src/pages/publics/EmailValidation.js")
                             console.log(hash)
+
+                        /**
+                         * Aqui precisa ser verificado se o chunk teve parte removida (removedPart).
+                         * Se tiver, precisa olhar a parte oposta com cuidado e identificar qual commit
+                         * a parte foi removida
+                        */
+
                         const diffLines = this.repos.runGitCommandArray(`diff ${hash} ${file.fullName}`)
                         diffLines.forEach((line, index) => {
                             if(file.fullName == "frontend/src/pages/publics/EmailValidation.js" && chunkId == 0 && (tagStatus == 0 || tagStatus == 1))
