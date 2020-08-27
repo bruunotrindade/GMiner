@@ -8,7 +8,7 @@ const repos = new Repository("/home/brunotrindade/navigo")
 repos.loadMergesData()
 
 repos.merges.forEach(merge => {
-    if(!merge.isFastForward) {
+    if(!merge.isFastForward && merge.commit.hash.startsWith("ee7eac")) {
         merge.loadAttributes(true, true, true, true, true, true)
         console.log(`[${merge.commit.hash.substring(0, 6)}] Merge explored`)
         //console.log(merge)

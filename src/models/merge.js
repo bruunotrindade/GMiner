@@ -74,7 +74,7 @@ class Merge {
                     if(file)
                         file.changeName(newName)
                     else 
-                        changedFiles.push(new ChangedFile(newName, [ oldName ]))
+                        changedFiles.push(new File(newName, [ oldName ]))
                 }
             })
             return changedFiles
@@ -221,15 +221,15 @@ class Merge {
                         tagStatus = 1;
 
                         //Caso a próxima linha seja o marcador do meio, então a parte 1 foi removida
-                        if(diffLines[index+1].startsWith(CONFLICT_TAGS[1]))
-                            chunk['removedPart'] = 1
+                        if(diffLines[index+1].replace(/\+/g, "").startsWith(CONFLICT_TAGS[1]))
+                            chunk['removedPart'] = 0
                     }
                     else if(line.replace(/\+/g, "").startsWith(CONFLICT_TAGS[2])) {
                         tagStatus = 0;
 
                         //Caso a linha anterior seja o marcador do meio, então a parte 2 foi removida
-                        if(diffLines[index-1].startsWith(CONFLICT_TAGS[1]))
-                            chunk['removedPart'] = 2
+                        if(diffLines[index-1].replace(/\+/g, "").startsWith(CONFLICT_TAGS[1]))
+                            chunk['removedPart'] = 1
 
                         chunk['lines'].push(line)
                         file.chunks.push(chunk)
@@ -260,8 +260,6 @@ class Merge {
                     commitsModified.forEach(hash => {
                         let tagStatus = -1
                         let chunkId = 0
-                        if(file.fullName == "frontend/src/pages/publics/EmailValidation.js")
-                            console.log(hash)
 
                         /**
                          * Aqui precisa ser verificado se o chunk teve parte removida (removedPart).
@@ -271,10 +269,8 @@ class Merge {
 
                         const diffLines = this.repos.runGitCommandArray(`diff ${hash} ${file.fullName}`)
                         diffLines.forEach((line, index) => {
-                            if(file.fullName == "frontend/src/pages/publics/EmailValidation.js" && chunkId == 0 && (tagStatus == 0 || tagStatus == 1))
-                                console.log(line)
 
-                            for(let tagStatusI = 0; tagStatusI < 3; tagStatusI++)
+                            for(let tagStatusI = 0; tagStatusI < 3; tagStatusI++) {
                                 if(line.startsWith("+" + CONFLICT_TAGS[tagStatusI])) {
                                     tagStatus = tagStatusI
                                     if(tagStatus == 2) {
@@ -283,17 +279,53 @@ class Merge {
                                     }
                                     break;
                                 }
+                            }
 
                             if(chunkId < file.chunks.length) {
-                                if(branch == tagStatus && !line.startsWith("+") && file.chunks[chunkId]['authors'][branch] == null) {
-                                    file.chunks[chunkId]['authors'][branch] = this.repos.getCommitAuthor(hash)
-                                    if(branch == 0) {
-                                        //console.log(`linha ${index} = ${line}`)
-                                        //console.log(`CHUNK ${chunkId} setado =>`, file.chunks[chunkId])
+                                if(file.chunks[chunkId]['authors'][branch] == null) {
+                                    if((branch == tagStatus && !line.startsWith("+")) || (!file.chunks['removedPart'] == tagStatus && line.startsWith("-"))) {
+                                        file.chunks[chunkId]['authors'][branch] = this.repos.getCommitAuthor(hash)
                                     }
                                 }
                             }
                         })                            
+                    })
+
+                    file.chunks.forEach((chunk, chunkIndex) => {
+                        if(chunk['removedPart'] == branch && (chunk['authors'][0] == null || chunk['authors'][1] == null)) {
+                            
+                            const lastModified = commitsModified[commitsModified.length-1] 
+                            const hashRemovedPart = this.getCommitBeforeCommit(lastModified)
+
+                            let chunkId = 0, tagStatus = -1
+                            const diffLines = this.repos.runGitCommandArray(`diff ${hashRemovedPart} ${file.fullName}`)
+                            
+                            diffLines.forEach((line, index) => {
+
+                                for(let tagStatusI = 0; tagStatusI < 3; tagStatusI++) {
+                                    if(line.startsWith("+" + CONFLICT_TAGS[tagStatusI])) {
+                                        console.log("TAG OK")
+                                        tagStatus = tagStatusI
+                                        if(tagStatus == 2) {
+                                            chunkId += 1
+                                            tagStatus = -1
+                                        }
+                                        break;
+                                    }
+                                }
+
+                                if(chunkId == chunkIndex) {
+                                    if(file.chunks[chunkId]['authors'][branch] == null) {
+                                        if(line.startsWith("-"))
+                                            console.log("LINHA - => ", line, !file.chunks['removedPart'], tagStatus)
+                                        
+                                        if(!file.chunks['removedPart'] == tagStatus && line.startsWith("-")) {
+                                            file.chunks[chunkId]['authors'][branch] = this.repos.getCommitAuthor(hashRemovedPart)
+                                        }
+                                    }
+                                }
+                            })
+                        }
                     })
                 }
             })
@@ -312,10 +344,15 @@ class Merge {
             afterBase = new Commit(this.repos, commit, true)
             
             if(afterBase.unixTime <= parent.unixTime && afterBase.unixTime > this.base.unixTime)
-            return
+                return
         })
         return afterBase
-	}
+    }
+    
+    getCommitBeforeCommit(hash) {
+        const commits = this.repos.runGitCommandArray(`log --pretty=format:%H ${this.base.hash}^..${hash}`)
+        return commits[1]
+    }
 }
 
 export default Merge

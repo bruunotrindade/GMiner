@@ -40,7 +40,7 @@ class Repository {
 
     loadMergesData() {
         const self = this
-        this.merges = this.merges.slice(0, 16).map((merge) => {
+        this.merges = this.merges.map((merge) => {
             return new Merge(self, merge)
         })
     }
