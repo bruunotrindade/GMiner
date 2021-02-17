@@ -9,6 +9,7 @@ const CONFLICT_TAGS = ["<<<<<<<", "=======", ">>>>>>>"]
 class Merge {
 
     constructor(repos, hash) {
+        console.log(`Building merge - ${hash.slice(0, 4)}`)
         const loadParents = () => {
             const hashes = repos.runGitCommand(`log --pretty=%P -n 1 ${hash}`).split(" ")
             return [new Commit(repos, hashes[0], true), new Commit(repos, hashes[1], true)]
@@ -41,34 +42,31 @@ class Merge {
         }
         const loadChangedFiles = (branch) => {
             const lines = self.repos.runGitCommandArray(`log --stat --oneline --reverse ${this.base.hash}..${this.parents[branch].hash}`)
-
             // Filtering all statistic lines and removing repeated lines
             var fileLines = new Set(lines.filter((line) => {
                 return line.startsWith(' ') && !line.includes("changed")
             }).map((line) => {
                 return line.split(" | ")[0].trim()
             }))
-        
+            
             // Generating ChangedFiles and dealing with renamed files
             var changedFiles = []
             fileLines.forEach((line) => {
                 // File without rename
                 if(!line.includes(" => "))    
+                {
                     changedFiles.push(new File(line))
+                }
                 else {
-
                     // Regex to deal with "dir/{old_name => new_name}" or "old_name => new_name"
-                    var arrowPart = line.match(/(\w*\-*\.*\/?)* => (\w*\-*\.*\/?)*/)
-
+                    var arrowPart = line.match(/(\ \w*\-*\.*\/?)* => (\w*\-*\.*\/?)*/)
                     const files = arrowPart[0].split(" => ")
                     var oldName = files[0], newName = files[1]
-
                     if(line.includes("{")) {
                         var dir = line.trim().split("{")[0]
                         oldName = dir + oldName
                         newName = dir + newName
                     }
-
                     // Searching for file with old name
                     var file = changedFiles.find((file) => { return file.fullName === oldName })
                     if(file)
@@ -176,10 +174,18 @@ class Merge {
             mergeResponse.forEach((line) => {
 
                 // [add/add or content] conflict message
+                console.log("ORIG => " + line)
                 if(line.includes("Merge conflict in")) {
                     const filename = line.split("Merge conflict in ")[1]
                     const file = new File(filename)
                     file.conflictType = "UPDATE"
+                    this.conflictedFiles.push(file)
+                }
+                else if(line.startsWith("CONFLICT ")) {
+                    const type = line.match(/[CONFLICT [a-z]*\/[a-z]*/)
+                    const filename = type.contains("rename") ? "" : line.match(/(?=\w*)[\S]*(?= [a-z]* in)/)
+                    const file = new File(filename)
+                    file.conflictType = type
                     this.conflictedFiles.push(file)
                 }
                 // [modify/delete] conflict message
@@ -188,6 +194,9 @@ class Merge {
                     const file = new File(filename)
                     file.conflictType = "DELETE"
                     this.conflictedFiles.push(file)
+                }
+                else {
+                    console.log("DEU RUIM " + line)
                 }
             })
         }
@@ -219,13 +228,17 @@ class Merge {
                 diffLines.forEach((line, index) => {
                     if(line.replace(/\+/g, "").startsWith(CONFLICT_TAGS[0])) {
                         tagStatus = 1;
+                        chunk['linesBefore'] = [diffLines[index-2], diffLines[index-1]]
 
                         //Caso a próxima linha seja o marcador do meio, então a parte 1 foi removida
-                        if(diffLines[index+1].replace(/\+/g, "").startsWith(CONFLICT_TAGS[1]))
+                        if(diffLines[index+1].replace(/\+/g, "").startsWith(CONFLICT_TAGS[1])) {
                             chunk['removedPart'] = 0
+                        }
                     }
                     else if(line.replace(/\+/g, "").startsWith(CONFLICT_TAGS[2])) {
                         tagStatus = 0;
+
+                        chunk['linesAfter'] = [diffLines[index+1], diffLines[index+2]]
 
                         //Caso a linha anterior seja o marcador do meio, então a parte 2 foi removida
                         if(diffLines[index-1].replace(/\+/g, "").startsWith(CONFLICT_TAGS[1]))
@@ -253,10 +266,13 @@ class Merge {
 
     checkSelfConflict(branch) {
         if(this.conflict) {
+            this.selfConflicts = 0
             console.log(`VERIFICANDO BRANCH ${branch}`)
             this.conflictedFiles.forEach(file => {
                 if(file.conflictType != "DELETE") {
+                    console.log(file.chunks)
                     const commitsModified = this.repos.runGitCommandArray(`log --pretty=format:%H ${this.base.hash}^..${this.parents[branch].hash} ${file.fullName}`)
+                    console.log(commitsModified)
                     commitsModified.forEach(hash => {
                         let tagStatus = -1
                         let chunkId = 0
@@ -300,12 +316,17 @@ class Merge {
                             let chunkId = 0, tagStatus = -1
                             const diffLines = this.repos.runGitCommandArray(`diff ${hashRemovedPart} ${file.fullName}`)
                             
+                            let lineBeforeChunk = ""
+
                             diffLines.forEach((line, index) => {
 
                                 for(let tagStatusI = 0; tagStatusI < 3; tagStatusI++) {
                                     if(line.startsWith("+" + CONFLICT_TAGS[tagStatusI])) {
-                                        console.log("TAG OK")
                                         tagStatus = tagStatusI
+ 
+                                        if(tagStatus == 0) 
+                                            lineBeforeChunk = line
+ 
                                         if(tagStatus == 2) {
                                             chunkId += 1
                                             tagStatus = -1
@@ -319,12 +340,25 @@ class Merge {
                                         if(line.startsWith("-"))
                                             console.log("LINHA - => ", line, !file.chunks['removedPart'], tagStatus)
                                         
-                                        if(!file.chunks['removedPart'] == tagStatus && line.startsWith("-")) {
+                                        if(!file.chunks['removedPart'] == tagStatus && (line.startsWith("-"))) {
+                                            console.log("AUTOR SETADO AQUI")
+                                            file.chunks[chunkId]['authors'][branch] = this.repos.getCommitAuthor(hashRemovedPart)
+                                        }
+                                        else if(lineBeforeChunk.startsWith("+")) {
                                             file.chunks[chunkId]['authors'][branch] = this.repos.getCommitAuthor(hashRemovedPart)
                                         }
                                     }
                                 }
                             })
+                        }
+                    })
+
+                    file.chunks.forEach((chunk, chunkIndex) => {
+                        if(chunk['authors'][0] == null ^ chunk['authors'][1] == null) {
+                            this.nullChunks += 1
+                        }
+                        else if(chunk['authors'][0] == chunk['authors'][1]) {
+                            this.selfConflicts += 1
                         }
                     })
                 }

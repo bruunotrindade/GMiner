@@ -20,7 +20,6 @@ class Repository {
     
     runGitCommand(command) {
         var response
-        //console.log(command)
         try {
             response = execSync("git " + command, { cwd: this.dir, stdio: 'pipe' }).toString("utf8")
         }
@@ -40,9 +39,10 @@ class Repository {
 
     loadMergesData() {
         const self = this
-        this.merges = this.merges.map((merge) => {
+        /*this.merges = this.merges.map((merge) => {
             return new Merge(self, merge)
-        })
+        })*/
+        this.merges = [new Merge(self, "916d068e9c358c0d1cde10872d81f84969854f51")]
     }
 
     getCommitAuthor(hash) {

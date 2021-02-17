@@ -1,0 +1,2004 @@
+
+> gminer@1.0.0 start /home/brunotrindade/GMiner
+> babel-node src/App.js --presets env
+
+total = 1254
+merge =  1
+[765dd2] Merge explored
+merge =  2
+[f8f44b] Merge fast forward
+merge =  3
+[48efae] Merge explored
+merge =  4
+[dbf201] Merge explored
+merge =  5
+[697851] Merge explored
+merge =  6
+[5c1354] Merge explored
+merge =  7
+[8f576a] Merge explored
+merge =  8
+[cce0f1] Merge explored
+merge =  9
+[6b13bd] Merge explored
+merge =  10
+[faa02d] Merge fast forward
+merge =  11
+[8dbfac] Merge fast forward
+merge =  12
+[1d76a3] Merge explored
+merge =  13
+[91bf84] Merge fast forward
+merge =  14
+[74637a] Merge explored
+merge =  15
+[541313] Merge explored
+merge =  16
+[9742f8] Merge fast forward
+merge =  17
+[d4e4c7] Merge fast forward
+merge =  18
+[407a09] Merge explored
+merge =  19
+[6d1a36] Merge fast forward
+merge =  20
+[949628] Merge fast forward
+merge =  21
+[a9745d] Merge explored
+merge =  22
+[919aa8] Merge fast forward
+merge =  23
+[69add1] Merge explored
+merge =  24
+[b9a934] Merge fast forward
+merge =  25
+[e0f7b9] Merge explored
+merge =  26
+[9bb91b] Merge fast forward
+merge =  27
+[1c2e28] Merge explored
+merge =  28
+[dc599b] Merge explored
+merge =  29
+[4231a5] Merge explored
+merge =  30
+[8557e2] Merge fast forward
+merge =  31
+[223c64] Merge explored
+merge =  32
+[699ea2] Merge fast forward
+merge =  33
+[eb57fd] Merge fast forward
+merge =  34
+[5641ea] Merge explored
+merge =  35
+[7f1c5b] Merge fast forward
+merge =  36
+[cef29f] Merge fast forward
+merge =  37
+[29246e] Merge explored
+merge =  38
+src/test/java/io/vertx/core/net/impl/URIDecoderTest.java => 2 chunks
+src/main/java/io/vertx/core/impl/verticle/PackageHelper.java => 1 chunks
+src/main/java/io/vertx/core/impl/verticle/CompilingClassLoader.java => 1 chunks
+src/main/java/io/vertx/core/file/impl/FileResolver.java => 1 chunks
+VERIFICANDO BRANCH 0
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.decodeURIComponent;',
+      ' +import static org.junit.Assert.assertEquals;',
+      ' +import static org.junit.Assert.fail;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.*;',
+      '+ ',
+      '+ import static org.junit.Assert.*;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [ '  import java.net.URLEncoder;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    String encoded = URLEncoder.encode(original, "UTF-8");',
+      ' +    assertEquals(original, decodeURIComponent(encoded, true));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testPlusAsSpace() {',
+      ' +    assertEquals("foo bar", decodeURIComponent("foo+bar"));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testPlusAsPlus() {',
+      ' +    assertEquals("foo+bar", decodeURIComponent("foo+bar", false));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testSpaces() {',
+      ' +    assertEquals("foo bar", decodeURIComponent("foo%20bar"));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testSingleDecode() {',
+      ' +    assertEquals("../blah", decodeURIComponent("%2E%2E%2Fblah"));',
+      ' +    assertEquals("%20", decodeURIComponent("%2520"));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testFromRFC() {',
+      ' +    assertEquals("/ !\\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", decodeURIComponent("/%20%21%22%23%24%25%26%27%28%29%2A%2B%2C%2D%2E%2F%30%31%32%33%34%35%36%37%38%39%3A%3B%3C%3D%3E%3F%40%41%42%43%44%45%46%47%48%49%4A%4B%4C%4D%4E%4F%50%51%52%53%54%55%56%57%58%59%5A%5B%5C%5D%5E%5F%60%61%62%63%64%65%66%67%68%69%6A%6B%6C%6D%6E%6F%70%71%72%73%74%75%76%77%78%79%7A%7B%7C%7D%7E", false));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testNonLatin() {',
+      ' +    assertEquals("/foo/ñ/blah/婴儿服饰/eek/ฌ", decodeURIComponent("/foo/%C3%B1/blah/%E5%A9%B4%E5%84%BF%E6%9C%8D%E9%A5%B0/eek/%E0%B8%8C"));',
+      ' +    assertEquals("/foo/\\u00F1/blah/\\u5a74\\u513f\\u670d\\u9970/eek/\\u0E0C", decodeURIComponent("/foo/%C3%B1/blah/%E5%A9%B4%E5%84%BF%E6%9C%8D%E9%A5%B0/eek/%E0%B8%8C", false));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testIncomplete() {',
+      ' +    try {',
+      ' +      decodeURIComponent("a%");',
+      ' +      fail("should fail");',
+      ' +    } catch (RuntimeException e) {',
+      ' +      // expected',
+      ' +    }',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testCaseInsensitive() {',
+      ' +    assertEquals("../blah", decodeURIComponent("%2e%2e%2fblah"));',
+      ' +  }',
+      ' +',
+      '++=======',
+      '+     String encoded = URLEncoder.encode( original, "UTF-8" );',
+      '+     assertEquals(original, decodeURIComponent( encoded, true ) );',
+      '+   }',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [
+      '    public void testDecode() throws Exception {',
+      '      String original = "ein verr+++ückter text mit Leerzeichen, Plus und Umlauten";'
+    ],
+    linesAfter: [ '  }', undefined ]
+  }
+]
+[ '96dbff9ff4072862db456fc08ce37c4df6c33111' ]
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.decodeURIComponent;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.decodeURIComponent;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [ '  import java.util.jar.JarEntry;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+[ '96dbff9ff4072862db456fc08ce37c4df6c33111' ]
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.decodeURIComponent;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.decodeURIComponent;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [ '  import java.util.List;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+[ '96dbff9ff4072862db456fc08ce37c4df6c33111' ]
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.*;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.*;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [ '  import java.util.zip.ZipFile;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+[ '96dbff9ff4072862db456fc08ce37c4df6c33111' ]
+VERIFICANDO BRANCH 1
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.decodeURIComponent;',
+      ' +import static org.junit.Assert.assertEquals;',
+      ' +import static org.junit.Assert.fail;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.*;',
+      '+ ',
+      '+ import static org.junit.Assert.*;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [ '  import java.net.URLEncoder;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    String encoded = URLEncoder.encode(original, "UTF-8");',
+      ' +    assertEquals(original, decodeURIComponent(encoded, true));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testPlusAsSpace() {',
+      ' +    assertEquals("foo bar", decodeURIComponent("foo+bar"));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testPlusAsPlus() {',
+      ' +    assertEquals("foo+bar", decodeURIComponent("foo+bar", false));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testSpaces() {',
+      ' +    assertEquals("foo bar", decodeURIComponent("foo%20bar"));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testSingleDecode() {',
+      ' +    assertEquals("../blah", decodeURIComponent("%2E%2E%2Fblah"));',
+      ' +    assertEquals("%20", decodeURIComponent("%2520"));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testFromRFC() {',
+      ' +    assertEquals("/ !\\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", decodeURIComponent("/%20%21%22%23%24%25%26%27%28%29%2A%2B%2C%2D%2E%2F%30%31%32%33%34%35%36%37%38%39%3A%3B%3C%3D%3E%3F%40%41%42%43%44%45%46%47%48%49%4A%4B%4C%4D%4E%4F%50%51%52%53%54%55%56%57%58%59%5A%5B%5C%5D%5E%5F%60%61%62%63%64%65%66%67%68%69%6A%6B%6C%6D%6E%6F%70%71%72%73%74%75%76%77%78%79%7A%7B%7C%7D%7E", false));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testNonLatin() {',
+      ' +    assertEquals("/foo/ñ/blah/婴儿服饰/eek/ฌ", decodeURIComponent("/foo/%C3%B1/blah/%E5%A9%B4%E5%84%BF%E6%9C%8D%E9%A5%B0/eek/%E0%B8%8C"));',
+      ' +    assertEquals("/foo/\\u00F1/blah/\\u5a74\\u513f\\u670d\\u9970/eek/\\u0E0C", decodeURIComponent("/foo/%C3%B1/blah/%E5%A9%B4%E5%84%BF%E6%9C%8D%E9%A5%B0/eek/%E0%B8%8C", false));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testIncomplete() {',
+      ' +    try {',
+      ' +      decodeURIComponent("a%");',
+      ' +      fail("should fail");',
+      ' +    } catch (RuntimeException e) {',
+      ' +      // expected',
+      ' +    }',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testCaseInsensitive() {',
+      ' +    assertEquals("../blah", decodeURIComponent("%2e%2e%2fblah"));',
+      ' +  }',
+      ' +',
+      '++=======',
+      '+     String encoded = URLEncoder.encode( original, "UTF-8" );',
+      '+     assertEquals(original, decodeURIComponent( encoded, true ) );',
+      '+   }',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [
+      '    public void testDecode() throws Exception {',
+      '      String original = "ein verr+++ückter text mit Leerzeichen, Plus und Umlauten";'
+    ],
+    linesAfter: [ '  }', undefined ]
+  }
+]
+[ '630f0f35de9894b0c293e1fca61768f625c1aab0' ]
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.decodeURIComponent;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.decodeURIComponent;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [ '  import java.util.jar.JarEntry;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+[ '630f0f35de9894b0c293e1fca61768f625c1aab0' ]
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.decodeURIComponent;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.decodeURIComponent;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [ '  import java.util.List;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+[ '630f0f35de9894b0c293e1fca61768f625c1aab0' ]
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.*;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.*;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [ '  import java.util.zip.ZipFile;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+[ '630f0f35de9894b0c293e1fca61768f625c1aab0' ]
+arquivo = src/test/java/io/vertx/core/net/impl/URIDecoderTest.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.decodeURIComponent;',
+      ' +import static org.junit.Assert.assertEquals;',
+      ' +import static org.junit.Assert.fail;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.*;',
+      '+ ',
+      '+ import static org.junit.Assert.*;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ 'Paulo Lopes', 'Paulo Lopes' ],
+    removedPart: -1,
+    linesBefore: [ '  import java.net.URLEncoder;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    String encoded = URLEncoder.encode(original, "UTF-8");',
+      ' +    assertEquals(original, decodeURIComponent(encoded, true));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testPlusAsSpace() {',
+      ' +    assertEquals("foo bar", decodeURIComponent("foo+bar"));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testPlusAsPlus() {',
+      ' +    assertEquals("foo+bar", decodeURIComponent("foo+bar", false));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testSpaces() {',
+      ' +    assertEquals("foo bar", decodeURIComponent("foo%20bar"));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testSingleDecode() {',
+      ' +    assertEquals("../blah", decodeURIComponent("%2E%2E%2Fblah"));',
+      ' +    assertEquals("%20", decodeURIComponent("%2520"));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testFromRFC() {',
+      ' +    assertEquals("/ !\\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", decodeURIComponent("/%20%21%22%23%24%25%26%27%28%29%2A%2B%2C%2D%2E%2F%30%31%32%33%34%35%36%37%38%39%3A%3B%3C%3D%3E%3F%40%41%42%43%44%45%46%47%48%49%4A%4B%4C%4D%4E%4F%50%51%52%53%54%55%56%57%58%59%5A%5B%5C%5D%5E%5F%60%61%62%63%64%65%66%67%68%69%6A%6B%6C%6D%6E%6F%70%71%72%73%74%75%76%77%78%79%7A%7B%7C%7D%7E", false));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testNonLatin() {',
+      ' +    assertEquals("/foo/ñ/blah/婴儿服饰/eek/ฌ", decodeURIComponent("/foo/%C3%B1/blah/%E5%A9%B4%E5%84%BF%E6%9C%8D%E9%A5%B0/eek/%E0%B8%8C"));',
+      ' +    assertEquals("/foo/\\u00F1/blah/\\u5a74\\u513f\\u670d\\u9970/eek/\\u0E0C", decodeURIComponent("/foo/%C3%B1/blah/%E5%A9%B4%E5%84%BF%E6%9C%8D%E9%A5%B0/eek/%E0%B8%8C", false));',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testIncomplete() {',
+      ' +    try {',
+      ' +      decodeURIComponent("a%");',
+      ' +      fail("should fail");',
+      ' +    } catch (RuntimeException e) {',
+      ' +      // expected',
+      ' +    }',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void testCaseInsensitive() {',
+      ' +    assertEquals("../blah", decodeURIComponent("%2e%2e%2fblah"));',
+      ' +  }',
+      ' +',
+      '++=======',
+      '+     String encoded = URLEncoder.encode( original, "UTF-8" );',
+      '+     assertEquals(original, decodeURIComponent( encoded, true ) );',
+      '+   }',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ 'Paulo Lopes', 'Paulo Lopes' ],
+    removedPart: -1,
+    linesBefore: [
+      '    public void testDecode() throws Exception {',
+      '      String original = "ein verr+++ückter text mit Leerzeichen, Plus und Umlauten";'
+    ],
+    linesAfter: [ '  }', undefined ]
+  }
+]
+arquivo = src/main/java/io/vertx/core/impl/verticle/PackageHelper.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.decodeURIComponent;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.decodeURIComponent;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ 'Paulo Lopes', 'Paulo Lopes' ],
+    removedPart: -1,
+    linesBefore: [ '  import java.util.jar.JarEntry;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+arquivo = src/main/java/io/vertx/core/impl/verticle/CompilingClassLoader.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.decodeURIComponent;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.decodeURIComponent;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ 'Paulo Lopes', 'Paulo Lopes' ],
+    removedPart: -1,
+    linesBefore: [ '  import java.util.List;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+arquivo = src/main/java/io/vertx/core/file/impl/FileResolver.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import static io.vertx.core.net.impl.URIDecoder.*;',
+      '++=======',
+      '+ import static io.vertx.core.net.URIDecoder.*;',
+      '++>>>>>>> 630f0f35de9894b0c293e1fca61768f625c1aab0'
+    ],
+    authors: [ 'Paulo Lopes', 'Paulo Lopes' ],
+    removedPart: -1,
+    linesBefore: [ '  import java.util.zip.ZipFile;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+[e016a3] Merge explored
+merge =  39
+[4901cc] Merge fast forward
+merge =  40
+[8c8688] Merge explored
+merge =  41
+[18c6d0] Merge fast forward
+merge =  42
+[01bc14] Merge explored
+merge =  43
+src/main/java/io/vertx/core/net/impl/transport/KQueueTransport.java => 1 chunks
+VERIFICANDO BRANCH 0
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import io.netty.channel.*;',
+      ' +import io.netty.channel.epoll.EpollChannelOption;',
+      ' +import io.netty.channel.kqueue.KQueue;',
+      ' +import io.netty.channel.kqueue.KQueueDatagramChannel;',
+      ' +import io.netty.channel.kqueue.KQueueDomainSocketChannel;',
+      ' +import io.netty.channel.kqueue.KQueueEventLoopGroup;',
+      ' +import io.netty.channel.kqueue.KQueueServerDomainSocketChannel;',
+      ' +import io.netty.channel.kqueue.KQueueServerSocketChannel;',
+      ' +import io.netty.channel.kqueue.KQueueSocketChannel;',
+      '++=======',
+      '+ import io.netty.channel.Channel;',
+      '+ import io.netty.channel.EventLoopGroup;',
+      '+ import io.netty.channel.ServerChannel;',
+      '+ import io.netty.channel.kqueue.*;',
+      '++>>>>>>> 407001830066c8f819ce8d8f5a10188e21c0c3c7'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [ '  ', '  import io.netty.bootstrap.ServerBootstrap;' ],
+    linesAfter: [
+      '  import io.netty.channel.socket.DatagramChannel;',
+      '  import io.netty.channel.socket.InternetProtocolFamily;'
+    ]
+  }
+]
+[ 'd26e725ab6844abda394d85e7af257ef29fc8017' ]
+VERIFICANDO BRANCH 1
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import io.netty.channel.*;',
+      ' +import io.netty.channel.epoll.EpollChannelOption;',
+      ' +import io.netty.channel.kqueue.KQueue;',
+      ' +import io.netty.channel.kqueue.KQueueDatagramChannel;',
+      ' +import io.netty.channel.kqueue.KQueueDomainSocketChannel;',
+      ' +import io.netty.channel.kqueue.KQueueEventLoopGroup;',
+      ' +import io.netty.channel.kqueue.KQueueServerDomainSocketChannel;',
+      ' +import io.netty.channel.kqueue.KQueueServerSocketChannel;',
+      ' +import io.netty.channel.kqueue.KQueueSocketChannel;',
+      '++=======',
+      '+ import io.netty.channel.Channel;',
+      '+ import io.netty.channel.EventLoopGroup;',
+      '+ import io.netty.channel.ServerChannel;',
+      '+ import io.netty.channel.kqueue.*;',
+      '++>>>>>>> 407001830066c8f819ce8d8f5a10188e21c0c3c7'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [ '  ', '  import io.netty.bootstrap.ServerBootstrap;' ],
+    linesAfter: [
+      '  import io.netty.channel.socket.DatagramChannel;',
+      '  import io.netty.channel.socket.InternetProtocolFamily;'
+    ]
+  }
+]
+[ '0948407f1927f698d57fe737e246a3cc50dd90e8' ]
+arquivo = src/main/java/io/vertx/core/net/impl/transport/KQueueTransport.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import io.netty.channel.*;',
+      ' +import io.netty.channel.epoll.EpollChannelOption;',
+      ' +import io.netty.channel.kqueue.KQueue;',
+      ' +import io.netty.channel.kqueue.KQueueDatagramChannel;',
+      ' +import io.netty.channel.kqueue.KQueueDomainSocketChannel;',
+      ' +import io.netty.channel.kqueue.KQueueEventLoopGroup;',
+      ' +import io.netty.channel.kqueue.KQueueServerDomainSocketChannel;',
+      ' +import io.netty.channel.kqueue.KQueueServerSocketChannel;',
+      ' +import io.netty.channel.kqueue.KQueueSocketChannel;',
+      '++=======',
+      '+ import io.netty.channel.Channel;',
+      '+ import io.netty.channel.EventLoopGroup;',
+      '+ import io.netty.channel.ServerChannel;',
+      '+ import io.netty.channel.kqueue.*;',
+      '++>>>>>>> 407001830066c8f819ce8d8f5a10188e21c0c3c7'
+    ],
+    authors: [ 'Paulo Lopes', 'Julien Viet' ],
+    removedPart: -1,
+    linesBefore: [ '  ', '  import io.netty.bootstrap.ServerBootstrap;' ],
+    linesAfter: [
+      '  import io.netty.channel.socket.DatagramChannel;',
+      '  import io.netty.channel.socket.InternetProtocolFamily;'
+    ]
+  }
+]
+[cfb353] Merge explored
+merge =  44
+[e1deb3] Merge explored
+merge =  45
+[c22c67] Merge fast forward
+merge =  46
+[df5647] Merge fast forward
+merge =  47
+[231d85] Merge explored
+merge =  48
+[589a9b] Merge fast forward
+merge =  49
+[e69a81] Merge fast forward
+merge =  50
+[b9ef5e] Merge fast forward
+merge =  51
+[b2aebb] Merge explored
+merge =  52
+[4df0db] Merge explored
+merge =  53
+[f4c504] Merge fast forward
+merge =  54
+[553f8d] Merge explored
+merge =  55
+[76333c] Merge fast forward
+merge =  56
+[fb568a] Merge fast forward
+merge =  57
+[fb8d32] Merge fast forward
+merge =  58
+[7e5bd2] Merge fast forward
+merge =  59
+[defa18] Merge explored
+merge =  60
+[825c18] Merge explored
+merge =  61
+[8f465e] Merge explored
+merge =  62
+src/test/java/io/vertx/test/core/Http1xTest.java => 1 chunks
+src/main/java/io/vertx/core/http/impl/ConnectionManager.java => 1 chunks
+VERIFICANDO BRANCH 0
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  public void testPausedHttpServerRequestUnpauseTheConnectionAtRequestEnd() throws Exception {',
+      ' +    int numRequests = 20;',
+      ' +    waitFor(numRequests);',
+      ' +    server.requestHandler(req -> {',
+      ' +      req.handler(buff -> {',
+      ' +        assertEquals("small", buff.toString());',
+      ' +        req.pause();',
+      ' +      });',
+      ' +      req.endHandler(v -> {',
+      ' +        req.response().end();',
+      ' +      });',
+      ' +    });',
+      ' +    startServer();',
+      ' +    client.close();',
+      ' +    client = vertx.createHttpClient(createBaseClientOptions().setMaxPoolSize(1));',
+      ' +    for (int i = 0;i < numRequests;i++) {',
+      ' +      client.put(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/someuri", resp -> {',
+      ' +        complete();',
+      ' +      }).end("small");',
+      ' +    }',
+      '++=======',
+      '+   public void testPoolLIFOPolicy() throws Exception {',
+      '+     List<HttpServerRequest> requests = new ArrayList<>();',
+      '+     server.requestHandler(req -> {',
+      '+       requests.add(req);',
+      '+       switch (requests.size()) {',
+      '+         case 2:',
+      '+           requests.forEach(r -> r.response().end());',
+      '+           break;',
+      '+         case 3:',
+      '+           req.response().end();',
+      '+           break;',
+      '+       }',
+      '+     });',
+      '+     startServer();',
+      '+     client.close();',
+      '+     client = vertx.createHttpClient(createBaseClientOptions().setMaxPoolSize(2));',
+      '+     // Make two concurrent requests and finish one first',
+      '+     List<HttpConnection> connections = Collections.synchronizedList(new ArrayList<>());',
+      '+     CountDownLatch latch = new CountDownLatch(2);',
+      '+     // Use one event loop to be sure about response ordering',
+      '+     vertx.runOnContext(v0 -> {',
+      '+       for (int i = 0;i < 2;i++) {',
+      '+         client.getNow(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/someuri", resp -> {',
+      '+           resp.endHandler(v1 -> {',
+      '+             // Use runOnContext to be sure the connections is put back in the pool',
+      '+             vertx.runOnContext(v2 -> {',
+      '+               connections.add(resp.request().connection());',
+      '+               latch.countDown();',
+      '+             });',
+      '+           });',
+      '+         });',
+      '+       }',
+      '+     });',
+      '+     awaitLatch(latch);',
+      '+     client.getNow(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/someuri", resp -> {',
+      '+       assertSame(resp.request().connection(), connections.get(1));',
+      '+       testComplete();',
+      '+     });',
+      '++>>>>>>> dd14d8f7503e1310e433445115db15b5949adf9d'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [ '  ', '    @Test' ],
+    linesAfter: [ '      await();', '    }' ]
+  }
+]
+[
+  'd96b74d63548d3038a76b28584d6ba0b82e0957e',
+  '4fd78932322602a89e6d40ae027159c5aa17130e',
+  '84358d2bfca8b6a04f9a3e376abee7773b009d81',
+  '910cdaff712ceb5914b864c560ffd7677624016a',
+  '4e81a783f8dce9601457ee0e4e94359a5e58c89c',
+  '50d5faf359a8193d5790aefb8269b896d9fc2feb'
+]
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      '++=======',
+      '+ import java.util.function.Consumer;',
+      '+ import java.util.function.Function;',
+      '++>>>>>>> dd14d8f7503e1310e433445115db15b5949adf9d'
+    ],
+    authors: [ null, null ],
+    removedPart: 0,
+    linesBefore: [
+      '  import java.util.*;',
+      '  import java.util.concurrent.ConcurrentHashMap;'
+    ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+[
+  '50d5faf359a8193d5790aefb8269b896d9fc2feb',
+  '543acc774ed8871e8b2451bf4a18bcbb68408978',
+  '930ed2b80bb72f0e386c9b02859db12e6ad2f72d',
+  'd2eee38c2d39b10c27c96fbad4aba143c25b51bb',
+  'b7adb0d6f9efd33f4914a60a4c3d0de981236eb0'
+]
+LINHA - =>  --- a/src/main/java/io/vertx/core/http/impl/ConnectionManager.java true -1
+LINHA - =>  -import io.vertx.core.http.impl.pool.Waiter; true -1
+LINHA - =>  -import io.vertx.core.impl.ContextInternal; true -1
+LINHA - =>  -import java.util.function.BiConsumer; true -1
+LINHA - =>  -import java.util.function.BiFunction; true -1
+VERIFICANDO BRANCH 1
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  public void testPausedHttpServerRequestUnpauseTheConnectionAtRequestEnd() throws Exception {',
+      ' +    int numRequests = 20;',
+      ' +    waitFor(numRequests);',
+      ' +    server.requestHandler(req -> {',
+      ' +      req.handler(buff -> {',
+      ' +        assertEquals("small", buff.toString());',
+      ' +        req.pause();',
+      ' +      });',
+      ' +      req.endHandler(v -> {',
+      ' +        req.response().end();',
+      ' +      });',
+      ' +    });',
+      ' +    startServer();',
+      ' +    client.close();',
+      ' +    client = vertx.createHttpClient(createBaseClientOptions().setMaxPoolSize(1));',
+      ' +    for (int i = 0;i < numRequests;i++) {',
+      ' +      client.put(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/someuri", resp -> {',
+      ' +        complete();',
+      ' +      }).end("small");',
+      ' +    }',
+      '++=======',
+      '+   public void testPoolLIFOPolicy() throws Exception {',
+      '+     List<HttpServerRequest> requests = new ArrayList<>();',
+      '+     server.requestHandler(req -> {',
+      '+       requests.add(req);',
+      '+       switch (requests.size()) {',
+      '+         case 2:',
+      '+           requests.forEach(r -> r.response().end());',
+      '+           break;',
+      '+         case 3:',
+      '+           req.response().end();',
+      '+           break;',
+      '+       }',
+      '+     });',
+      '+     startServer();',
+      '+     client.close();',
+      '+     client = vertx.createHttpClient(createBaseClientOptions().setMaxPoolSize(2));',
+      '+     // Make two concurrent requests and finish one first',
+      '+     List<HttpConnection> connections = Collections.synchronizedList(new ArrayList<>());',
+      '+     CountDownLatch latch = new CountDownLatch(2);',
+      '+     // Use one event loop to be sure about response ordering',
+      '+     vertx.runOnContext(v0 -> {',
+      '+       for (int i = 0;i < 2;i++) {',
+      '+         client.getNow(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/someuri", resp -> {',
+      '+           resp.endHandler(v1 -> {',
+      '+             // Use runOnContext to be sure the connections is put back in the pool',
+      '+             vertx.runOnContext(v2 -> {',
+      '+               connections.add(resp.request().connection());',
+      '+               latch.countDown();',
+      '+             });',
+      '+           });',
+      '+         });',
+      '+       }',
+      '+     });',
+      '+     awaitLatch(latch);',
+      '+     client.getNow(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/someuri", resp -> {',
+      '+       assertSame(resp.request().connection(), connections.get(1));',
+      '+       testComplete();',
+      '+     });',
+      '++>>>>>>> dd14d8f7503e1310e433445115db15b5949adf9d'
+    ],
+    authors: [ 'Julien Viet', null ],
+    removedPart: -1,
+    linesBefore: [ '  ', '    @Test' ],
+    linesAfter: [ '      await();', '    }' ]
+  }
+]
+[ 'dd14d8f7503e1310e433445115db15b5949adf9d' ]
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      '++=======',
+      '+ import java.util.function.Consumer;',
+      '+ import java.util.function.Function;',
+      '++>>>>>>> dd14d8f7503e1310e433445115db15b5949adf9d'
+    ],
+    authors: [ 'Julien Viet', null ],
+    removedPart: 0,
+    linesBefore: [
+      '  import java.util.*;',
+      '  import java.util.concurrent.ConcurrentHashMap;'
+    ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+[
+  'dd14d8f7503e1310e433445115db15b5949adf9d',
+  '8f96a1339f5cf8304014a6ad2cb12eaa157bfcc3',
+  'a3a81aa4b552a73d004dc352c3831aa944f3dac2',
+  '930ed2b80bb72f0e386c9b02859db12e6ad2f72d',
+  'd2eee38c2d39b10c27c96fbad4aba143c25b51bb',
+  'b7adb0d6f9efd33f4914a60a4c3d0de981236eb0'
+]
+arquivo = src/test/java/io/vertx/test/core/Http1xTest.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  public void testPausedHttpServerRequestUnpauseTheConnectionAtRequestEnd() throws Exception {',
+      ' +    int numRequests = 20;',
+      ' +    waitFor(numRequests);',
+      ' +    server.requestHandler(req -> {',
+      ' +      req.handler(buff -> {',
+      ' +        assertEquals("small", buff.toString());',
+      ' +        req.pause();',
+      ' +      });',
+      ' +      req.endHandler(v -> {',
+      ' +        req.response().end();',
+      ' +      });',
+      ' +    });',
+      ' +    startServer();',
+      ' +    client.close();',
+      ' +    client = vertx.createHttpClient(createBaseClientOptions().setMaxPoolSize(1));',
+      ' +    for (int i = 0;i < numRequests;i++) {',
+      ' +      client.put(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/someuri", resp -> {',
+      ' +        complete();',
+      ' +      }).end("small");',
+      ' +    }',
+      '++=======',
+      '+   public void testPoolLIFOPolicy() throws Exception {',
+      '+     List<HttpServerRequest> requests = new ArrayList<>();',
+      '+     server.requestHandler(req -> {',
+      '+       requests.add(req);',
+      '+       switch (requests.size()) {',
+      '+         case 2:',
+      '+           requests.forEach(r -> r.response().end());',
+      '+           break;',
+      '+         case 3:',
+      '+           req.response().end();',
+      '+           break;',
+      '+       }',
+      '+     });',
+      '+     startServer();',
+      '+     client.close();',
+      '+     client = vertx.createHttpClient(createBaseClientOptions().setMaxPoolSize(2));',
+      '+     // Make two concurrent requests and finish one first',
+      '+     List<HttpConnection> connections = Collections.synchronizedList(new ArrayList<>());',
+      '+     CountDownLatch latch = new CountDownLatch(2);',
+      '+     // Use one event loop to be sure about response ordering',
+      '+     vertx.runOnContext(v0 -> {',
+      '+       for (int i = 0;i < 2;i++) {',
+      '+         client.getNow(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/someuri", resp -> {',
+      '+           resp.endHandler(v1 -> {',
+      '+             // Use runOnContext to be sure the connections is put back in the pool',
+      '+             vertx.runOnContext(v2 -> {',
+      '+               connections.add(resp.request().connection());',
+      '+               latch.countDown();',
+      '+             });',
+      '+           });',
+      '+         });',
+      '+       }',
+      '+     });',
+      '+     awaitLatch(latch);',
+      '+     client.getNow(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/someuri", resp -> {',
+      '+       assertSame(resp.request().connection(), connections.get(1));',
+      '+       testComplete();',
+      '+     });',
+      '++>>>>>>> dd14d8f7503e1310e433445115db15b5949adf9d'
+    ],
+    authors: [ 'Julien Viet', 'Julien Viet' ],
+    removedPart: -1,
+    linesBefore: [ '  ', '    @Test' ],
+    linesAfter: [ '      await();', '    }' ]
+  }
+]
+arquivo = src/main/java/io/vertx/core/http/impl/ConnectionManager.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      '++=======',
+      '+ import java.util.function.Consumer;',
+      '+ import java.util.function.Function;',
+      '++>>>>>>> dd14d8f7503e1310e433445115db15b5949adf9d'
+    ],
+    authors: [ 'Julien Viet', 'Julien Viet' ],
+    removedPart: 0,
+    linesBefore: [
+      '  import java.util.*;',
+      '  import java.util.concurrent.ConcurrentHashMap;'
+    ],
+    linesAfter: [ '  ', '  /**' ]
+  }
+]
+[8cd1df] Merge explored
+merge =  63
+[fea958] Merge fast forward
+merge =  64
+[9bed0f] Merge explored
+merge =  65
+[b60e8f] Merge fast forward
+merge =  66
+[f8515e] Merge explored
+merge =  67
+[6a0136] Merge fast forward
+merge =  68
+[3149c9] Merge fast forward
+merge =  69
+[98b28d] Merge explored
+merge =  70
+[966244] Merge explored
+merge =  71
+[54d712] Merge fast forward
+merge =  72
+[dcec31] Merge fast forward
+merge =  73
+[1fb6bc] Merge explored
+merge =  74
+[37d66d] Merge fast forward
+merge =  75
+[06e18d] Merge explored
+merge =  76
+[58786a] Merge explored
+merge =  77
+[b2a574] Merge explored
+merge =  78
+[f063a6] Merge explored
+merge =  79
+[aa87d7] Merge explored
+merge =  80
+[f0c3ce] Merge explored
+merge =  81
+[ee8708] Merge explored
+merge =  82
+[5eb55e] Merge explored
+merge =  83
+[256381] Merge explored
+merge =  84
+[de6387] Merge fast forward
+merge =  85
+[bdbaec] Merge explored
+merge =  86
+[4d2d6b] Merge explored
+merge =  87
+[cf4394] Merge explored
+merge =  88
+[947331] Merge fast forward
+merge =  89
+[4e1c13] Merge explored
+merge =  90
+[2f434a] Merge explored
+merge =  91
+[c79c69] Merge fast forward
+merge =  92
+[10be41] Merge fast forward
+merge =  93
+[4c0884] Merge explored
+merge =  94
+[fb7517] Merge fast forward
+merge =  95
+[38b1c2] Merge fast forward
+merge =  96
+[650590] Merge explored
+merge =  97
+[824fa4] Merge fast forward
+merge =  98
+[d715bc] Merge explored
+merge =  99
+[cb8e50] Merge explored
+merge =  100
+[0b1d6d] Merge fast forward
+merge =  101
+[2387a1] Merge fast forward
+merge =  102
+[a30703] Merge explored
+merge =  103
+[79f54e] Merge explored
+merge =  104
+[cdb43c] Merge explored
+merge =  105
+[0fe7c4] Merge explored
+merge =  106
+[639c27] Merge explored
+merge =  107
+[333c8c] Merge explored
+merge =  108
+[380e7f] Merge explored
+merge =  109
+[3f096b] Merge fast forward
+merge =  110
+[9472a1] Merge explored
+merge =  111
+[921855] Merge fast forward
+merge =  112
+[fe586f] Merge fast forward
+merge =  113
+[d64194] Merge explored
+merge =  114
+[659b22] Merge fast forward
+merge =  115
+[fea92c] Merge explored
+merge =  116
+[5a6b01] Merge explored
+merge =  117
+[73e4ba] Merge fast forward
+merge =  118
+[6523a8] Merge fast forward
+merge =  119
+[6cb781] Merge explored
+merge =  120
+[c99a8e] Merge explored
+merge =  121
+[b731ad] Merge explored
+merge =  122
+[c41d4c] Merge fast forward
+merge =  123
+[68ed28] Merge explored
+merge =  124
+[05d959] Merge explored
+merge =  125
+[a6a791] Merge fast forward
+merge =  126
+[c19dce] Merge explored
+merge =  127
+[fc0baa] Merge fast forward
+merge =  128
+[7869b4] Merge explored
+merge =  129
+[e48fe2] Merge explored
+merge =  130
+[2dcbfa] Merge explored
+merge =  131
+[25f8f6] Merge fast forward
+merge =  132
+[66c20c] Merge explored
+merge =  133
+[2335fe] Merge explored
+merge =  134
+[6a411a] Merge fast forward
+merge =  135
+[a57967] Merge explored
+merge =  136
+[874229] Merge fast forward
+merge =  137
+[77fbe8] Merge explored
+merge =  138
+[31ca83] Merge fast forward
+merge =  139
+[349ddf] Merge fast forward
+merge =  140
+[617c49] Merge explored
+merge =  141
+[75b292] Merge explored
+merge =  142
+[ae7d3e] Merge fast forward
+merge =  143
+[38a19a] Merge fast forward
+merge =  144
+[f6ac6c] Merge explored
+merge =  145
+[cc4723] Merge fast forward
+merge =  146
+[fa56b3] Merge fast forward
+merge =  147
+[bf3c74] Merge fast forward
+merge =  148
+[bf199b] Merge fast forward
+merge =  149
+[dc3508] Merge explored
+merge =  150
+[77090e] Merge fast forward
+merge =  151
+[434379] Merge explored
+merge =  152
+[d4900f] Merge fast forward
+merge =  153
+[05e2f9] Merge fast forward
+merge =  154
+[787212] Merge fast forward
+merge =  155
+[6631c2] Merge explored
+merge =  156
+[567eb4] Merge explored
+merge =  157
+[ea61b5] Merge explored
+merge =  158
+[c6d84d] Merge explored
+merge =  159
+[f5135a] Merge explored
+merge =  160
+src/test/java/io/vertx/test/core/JsonMapperTest.java => 1 chunks
+VERIFICANDO BRANCH 0
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  public void encodeToBuffer() {',
+      ' +    Buffer json = Json.encodeToBuffer("Hello World!");',
+      ' +    assertNotNull(json);',
+      ' +    // json strings are always UTF8',
+      ' +    assertEquals("\\"Hello World!\\"", json.toString("UTF-8"));',
+      '++=======',
+      '+   public void testGenericDecoding() {',
+      '+     Pojo original = new Pojo();',
+      '+     original.value = "test";',
+      '+ ',
+      '+     String json = Json.encode(Collections.singletonList(original));',
+      '+ ',
+      '+     List<Pojo> correct = Json.decodeValue(json, new TypeReference<List<Pojo>>() {});',
+      '+     assertTrue(((List)correct).get(0) instanceof Pojo);',
+      '+     assertEquals(original.value, correct.get(0).value);',
+      '+ ',
+      '+     List incorrect = Json.decodeValue(json, List.class);',
+      '+     assertFalse(incorrect.get(0) instanceof Pojo);',
+      '+     assertTrue(incorrect.get(0) instanceof Map);',
+      '+     assertEquals(original.value, ((Map)(incorrect.get(0))).get("value"));',
+      '+   }',
+      '+ ',
+      '+   private static class Pojo {',
+      '+     @JsonProperty',
+      '+     String value;',
+      '++>>>>>>> d71e80263342aefd94d64b5ee5681a621b8f8be9'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [ '  ', '    @Test' ],
+    linesAfter: [ '    }', '  }' ]
+  }
+]
+[ 'f3e08021e5dfe6ec55e27237d815a7f944ef52ff' ]
+VERIFICANDO BRANCH 1
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  public void encodeToBuffer() {',
+      ' +    Buffer json = Json.encodeToBuffer("Hello World!");',
+      ' +    assertNotNull(json);',
+      ' +    // json strings are always UTF8',
+      ' +    assertEquals("\\"Hello World!\\"", json.toString("UTF-8"));',
+      '++=======',
+      '+   public void testGenericDecoding() {',
+      '+     Pojo original = new Pojo();',
+      '+     original.value = "test";',
+      '+ ',
+      '+     String json = Json.encode(Collections.singletonList(original));',
+      '+ ',
+      '+     List<Pojo> correct = Json.decodeValue(json, new TypeReference<List<Pojo>>() {});',
+      '+     assertTrue(((List)correct).get(0) instanceof Pojo);',
+      '+     assertEquals(original.value, correct.get(0).value);',
+      '+ ',
+      '+     List incorrect = Json.decodeValue(json, List.class);',
+      '+     assertFalse(incorrect.get(0) instanceof Pojo);',
+      '+     assertTrue(incorrect.get(0) instanceof Map);',
+      '+     assertEquals(original.value, ((Map)(incorrect.get(0))).get("value"));',
+      '+   }',
+      '+ ',
+      '+   private static class Pojo {',
+      '+     @JsonProperty',
+      '+     String value;',
+      '++>>>>>>> d71e80263342aefd94d64b5ee5681a621b8f8be9'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [ '  ', '    @Test' ],
+    linesAfter: [ '    }', '  }' ]
+  }
+]
+[ 'aa86d0f721b01be30cd8f817fea1e5f2249bdd58' ]
+arquivo = src/test/java/io/vertx/test/core/JsonMapperTest.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  public void encodeToBuffer() {',
+      ' +    Buffer json = Json.encodeToBuffer("Hello World!");',
+      ' +    assertNotNull(json);',
+      ' +    // json strings are always UTF8',
+      ' +    assertEquals("\\"Hello World!\\"", json.toString("UTF-8"));',
+      '++=======',
+      '+   public void testGenericDecoding() {',
+      '+     Pojo original = new Pojo();',
+      '+     original.value = "test";',
+      '+ ',
+      '+     String json = Json.encode(Collections.singletonList(original));',
+      '+ ',
+      '+     List<Pojo> correct = Json.decodeValue(json, new TypeReference<List<Pojo>>() {});',
+      '+     assertTrue(((List)correct).get(0) instanceof Pojo);',
+      '+     assertEquals(original.value, correct.get(0).value);',
+      '+ ',
+      '+     List incorrect = Json.decodeValue(json, List.class);',
+      '+     assertFalse(incorrect.get(0) instanceof Pojo);',
+      '+     assertTrue(incorrect.get(0) instanceof Map);',
+      '+     assertEquals(original.value, ((Map)(incorrect.get(0))).get("value"));',
+      '+   }',
+      '+ ',
+      '+   private static class Pojo {',
+      '+     @JsonProperty',
+      '+     String value;',
+      '++>>>>>>> d71e80263342aefd94d64b5ee5681a621b8f8be9'
+    ],
+    authors: [ 'Paulo Lopes', 'Paulo Lopes' ],
+    removedPart: -1,
+    linesBefore: [ '  ', '    @Test' ],
+    linesAfter: [ '    }', '  }' ]
+  }
+]
+[d9a38f] Merge explored
+merge =  161
+[d71e80] Merge fast forward
+merge =  162
+src/test/java/io/vertx/test/core/JsonMapperTest.java => 2 chunks
+src/main/java/io/vertx/core/json/Json.java => 2 chunks
+VERIFICANDO BRANCH 0
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import java.time.Instant;',
+      ' +',
+      ' +import static java.time.format.DateTimeFormatter.ISO_INSTANT;',
+      '++=======',
+      '+ import java.util.Collections;',
+      '+ import java.util.List;',
+      '+ import java.util.Map;',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [ '  import org.junit.Test;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  public void encodeCustomTypeInstant() {',
+      ' +    Instant now = Instant.now();',
+      ' +    String json = Json.encode(now);',
+      ' +    assertNotNull(json);',
+      ' +    // the RFC is one way only',
+      ' +    Instant decoded = Instant.from(ISO_INSTANT.parse(json.substring(1, json.length() - 1)));',
+      ' +    assertEquals(now, decoded);',
+      ' +',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void encodeCustomTypeInstantNull() {',
+      ' +    Instant now = null;',
+      ' +    String json = Json.encode(now);',
+      ' +    assertNotNull(json);',
+      ' +    assertEquals("null", json);',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void encodeCustomTypeBinary() {',
+      " +    byte[] data = new byte[] { 'h', 'e', 'l', 'l', 'o'};",
+      ' +    String json = Json.encode(data);',
+      ' +    assertNotNull(json);',
+      ' +    // base64 encoded hello',
+      ' +    assertEquals("\\"aGVsbG8=\\"", json);',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void encodeCustomTypeBinaryNull() {',
+      ' +    byte[] data = null;',
+      ' +    String json = Json.encode(data);',
+      ' +    assertNotNull(json);',
+      ' +    assertEquals("null", json);',
+      '++=======',
+      '+   public void testGenericDecoding() {',
+      '+     Pojo original = new Pojo();',
+      '+     original.value = "test";',
+      '+ ',
+      '+     String json = Json.encode(Collections.singletonList(original));',
+      '+ ',
+      '+     List<Pojo> correct = Json.decodeValue(json, new TypeReference<List<Pojo>>() {});',
+      '+     assertTrue(((List)correct).get(0) instanceof Pojo);',
+      '+     assertEquals(original.value, correct.get(0).value);',
+      '+ ',
+      '+     List incorrect = Json.decodeValue(json, List.class);',
+      '+     assertFalse(incorrect.get(0) instanceof Pojo);',
+      '+     assertTrue(incorrect.get(0) instanceof Map);',
+      '+     assertEquals(original.value, ((Map)(incorrect.get(0))).get("value"));',
+      '+   }',
+      '+ ',
+      '+   private static class Pojo {',
+      '+     @JsonProperty',
+      '+     String value;',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [ '  ', '    @Test' ],
+    linesAfter: [ '    }', '  }' ]
+  }
+]
+[ '3ac6c840029b9bd8767a596aa289fd8ba7055b6b' ]
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import com.fasterxml.jackson.databind.*;',
+      '++=======',
+      '+ import com.fasterxml.jackson.core.type.TypeReference;',
+      '+ import com.fasterxml.jackson.databind.JsonSerializer;',
+      '+ import com.fasterxml.jackson.databind.ObjectMapper;',
+      '+ import com.fasterxml.jackson.databind.SerializationFeature;',
+      '+ import com.fasterxml.jackson.databind.SerializerProvider;',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [
+      '  import com.fasterxml.jackson.core.JsonGenerator;',
+      '  import com.fasterxml.jackson.core.JsonParser;'
+    ],
+    linesAfter: [
+      '  import com.fasterxml.jackson.databind.module.SimpleModule;',
+      '  '
+    ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    catch (Exception e) {',
+      ' +      throw new DecodeException("Failed to decode:" + e.getMessage(), e);',
+      '++=======',
+      '+   }',
+      '+ ',
+      '+   public static <T> T decodeValue(String str, TypeReference<T> type) throws DecodeException {',
+      '+     try {',
+      '+       return mapper.readValue(str, type);',
+      '+     } catch (Exception e) {',
+      '+       throw new DecodeException("Failed to decode:" + e.getMessage());',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [
+      '+       throw new DecodeException("Failed to decode:" + e.getMessage());',
+      '      }'
+    ],
+    linesAfter: [ '      }', '    }' ]
+  }
+]
+[
+  '7a8a362b49664c54b3458cd79ea5454570b27645',
+  '3ac6c840029b9bd8767a596aa289fd8ba7055b6b'
+]
+VERIFICANDO BRANCH 1
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import java.time.Instant;',
+      ' +',
+      ' +import static java.time.format.DateTimeFormatter.ISO_INSTANT;',
+      '++=======',
+      '+ import java.util.Collections;',
+      '+ import java.util.List;',
+      '+ import java.util.Map;',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [ '  import org.junit.Test;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  public void encodeCustomTypeInstant() {',
+      ' +    Instant now = Instant.now();',
+      ' +    String json = Json.encode(now);',
+      ' +    assertNotNull(json);',
+      ' +    // the RFC is one way only',
+      ' +    Instant decoded = Instant.from(ISO_INSTANT.parse(json.substring(1, json.length() - 1)));',
+      ' +    assertEquals(now, decoded);',
+      ' +',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void encodeCustomTypeInstantNull() {',
+      ' +    Instant now = null;',
+      ' +    String json = Json.encode(now);',
+      ' +    assertNotNull(json);',
+      ' +    assertEquals("null", json);',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void encodeCustomTypeBinary() {',
+      " +    byte[] data = new byte[] { 'h', 'e', 'l', 'l', 'o'};",
+      ' +    String json = Json.encode(data);',
+      ' +    assertNotNull(json);',
+      ' +    // base64 encoded hello',
+      ' +    assertEquals("\\"aGVsbG8=\\"", json);',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void encodeCustomTypeBinaryNull() {',
+      ' +    byte[] data = null;',
+      ' +    String json = Json.encode(data);',
+      ' +    assertNotNull(json);',
+      ' +    assertEquals("null", json);',
+      '++=======',
+      '+   public void testGenericDecoding() {',
+      '+     Pojo original = new Pojo();',
+      '+     original.value = "test";',
+      '+ ',
+      '+     String json = Json.encode(Collections.singletonList(original));',
+      '+ ',
+      '+     List<Pojo> correct = Json.decodeValue(json, new TypeReference<List<Pojo>>() {});',
+      '+     assertTrue(((List)correct).get(0) instanceof Pojo);',
+      '+     assertEquals(original.value, correct.get(0).value);',
+      '+ ',
+      '+     List incorrect = Json.decodeValue(json, List.class);',
+      '+     assertFalse(incorrect.get(0) instanceof Pojo);',
+      '+     assertTrue(incorrect.get(0) instanceof Map);',
+      '+     assertEquals(original.value, ((Map)(incorrect.get(0))).get("value"));',
+      '+   }',
+      '+ ',
+      '+   private static class Pojo {',
+      '+     @JsonProperty',
+      '+     String value;',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [ '  ', '    @Test' ],
+    linesAfter: [ '    }', '  }' ]
+  }
+]
+[ '08f2ffcd17baa154871b35202a671eaec3279332' ]
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import com.fasterxml.jackson.databind.*;',
+      '++=======',
+      '+ import com.fasterxml.jackson.core.type.TypeReference;',
+      '+ import com.fasterxml.jackson.databind.JsonSerializer;',
+      '+ import com.fasterxml.jackson.databind.ObjectMapper;',
+      '+ import com.fasterxml.jackson.databind.SerializationFeature;',
+      '+ import com.fasterxml.jackson.databind.SerializerProvider;',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [
+      '  import com.fasterxml.jackson.core.JsonGenerator;',
+      '  import com.fasterxml.jackson.core.JsonParser;'
+    ],
+    linesAfter: [
+      '  import com.fasterxml.jackson.databind.module.SimpleModule;',
+      '  '
+    ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    catch (Exception e) {',
+      ' +      throw new DecodeException("Failed to decode:" + e.getMessage(), e);',
+      '++=======',
+      '+   }',
+      '+ ',
+      '+   public static <T> T decodeValue(String str, TypeReference<T> type) throws DecodeException {',
+      '+     try {',
+      '+       return mapper.readValue(str, type);',
+      '+     } catch (Exception e) {',
+      '+       throw new DecodeException("Failed to decode:" + e.getMessage());',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ 'Paulo Lopes', null ],
+    removedPart: -1,
+    linesBefore: [
+      '+       throw new DecodeException("Failed to decode:" + e.getMessage());',
+      '      }'
+    ],
+    linesAfter: [ '      }', '    }' ]
+  }
+]
+[ '08f2ffcd17baa154871b35202a671eaec3279332' ]
+arquivo = src/test/java/io/vertx/test/core/JsonMapperTest.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import java.time.Instant;',
+      ' +',
+      ' +import static java.time.format.DateTimeFormatter.ISO_INSTANT;',
+      '++=======',
+      '+ import java.util.Collections;',
+      '+ import java.util.List;',
+      '+ import java.util.Map;',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ 'Paulo Lopes', 'Konstantin Gribov' ],
+    removedPart: -1,
+    linesBefore: [ '  import org.junit.Test;', '  ' ],
+    linesAfter: [ '  ', '  /**' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  public void encodeCustomTypeInstant() {',
+      ' +    Instant now = Instant.now();',
+      ' +    String json = Json.encode(now);',
+      ' +    assertNotNull(json);',
+      ' +    // the RFC is one way only',
+      ' +    Instant decoded = Instant.from(ISO_INSTANT.parse(json.substring(1, json.length() - 1)));',
+      ' +    assertEquals(now, decoded);',
+      ' +',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void encodeCustomTypeInstantNull() {',
+      ' +    Instant now = null;',
+      ' +    String json = Json.encode(now);',
+      ' +    assertNotNull(json);',
+      ' +    assertEquals("null", json);',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void encodeCustomTypeBinary() {',
+      " +    byte[] data = new byte[] { 'h', 'e', 'l', 'l', 'o'};",
+      ' +    String json = Json.encode(data);',
+      ' +    assertNotNull(json);',
+      ' +    // base64 encoded hello',
+      ' +    assertEquals("\\"aGVsbG8=\\"", json);',
+      ' +  }',
+      ' +',
+      ' +  @Test',
+      ' +  public void encodeCustomTypeBinaryNull() {',
+      ' +    byte[] data = null;',
+      ' +    String json = Json.encode(data);',
+      ' +    assertNotNull(json);',
+      ' +    assertEquals("null", json);',
+      '++=======',
+      '+   public void testGenericDecoding() {',
+      '+     Pojo original = new Pojo();',
+      '+     original.value = "test";',
+      '+ ',
+      '+     String json = Json.encode(Collections.singletonList(original));',
+      '+ ',
+      '+     List<Pojo> correct = Json.decodeValue(json, new TypeReference<List<Pojo>>() {});',
+      '+     assertTrue(((List)correct).get(0) instanceof Pojo);',
+      '+     assertEquals(original.value, correct.get(0).value);',
+      '+ ',
+      '+     List incorrect = Json.decodeValue(json, List.class);',
+      '+     assertFalse(incorrect.get(0) instanceof Pojo);',
+      '+     assertTrue(incorrect.get(0) instanceof Map);',
+      '+     assertEquals(original.value, ((Map)(incorrect.get(0))).get("value"));',
+      '+   }',
+      '+ ',
+      '+   private static class Pojo {',
+      '+     @JsonProperty',
+      '+     String value;',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ 'Paulo Lopes', 'Konstantin Gribov' ],
+    removedPart: -1,
+    linesBefore: [ '  ', '    @Test' ],
+    linesAfter: [ '    }', '  }' ]
+  }
+]
+arquivo = src/main/java/io/vertx/core/json/Json.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import com.fasterxml.jackson.databind.*;',
+      '++=======',
+      '+ import com.fasterxml.jackson.core.type.TypeReference;',
+      '+ import com.fasterxml.jackson.databind.JsonSerializer;',
+      '+ import com.fasterxml.jackson.databind.ObjectMapper;',
+      '+ import com.fasterxml.jackson.databind.SerializationFeature;',
+      '+ import com.fasterxml.jackson.databind.SerializerProvider;',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ 'Paulo Lopes', 'Konstantin Gribov' ],
+    removedPart: -1,
+    linesBefore: [
+      '  import com.fasterxml.jackson.core.JsonGenerator;',
+      '  import com.fasterxml.jackson.core.JsonParser;'
+    ],
+    linesAfter: [
+      '  import com.fasterxml.jackson.databind.module.SimpleModule;',
+      '  '
+    ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    catch (Exception e) {',
+      ' +      throw new DecodeException("Failed to decode:" + e.getMessage(), e);',
+      '++=======',
+      '+   }',
+      '+ ',
+      '+   public static <T> T decodeValue(String str, TypeReference<T> type) throws DecodeException {',
+      '+     try {',
+      '+       return mapper.readValue(str, type);',
+      '+     } catch (Exception e) {',
+      '+       throw new DecodeException("Failed to decode:" + e.getMessage());',
+      '++>>>>>>> 08f2ffcd17baa154871b35202a671eaec3279332'
+    ],
+    authors: [ 'Paulo Lopes', 'Konstantin Gribov' ],
+    removedPart: -1,
+    linesBefore: [
+      '+       throw new DecodeException("Failed to decode:" + e.getMessage());',
+      '      }'
+    ],
+    linesAfter: [ '      }', '    }' ]
+  }
+]
+[aa86d0] Merge explored
+merge =  163
+src/main/java/io/vertx/core/json/Json.java => 1 chunks
+VERIFICANDO BRANCH 0
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;',
+      ' +import io.netty.buffer.ByteBufInputStream;',
+      ' +import io.vertx.core.buffer.Buffer;',
+      '++=======',
+      '++>>>>>>> 1ff48fe8a82b5b5e2c33f7ca6b7aa2d2b7c8fe2d'
+    ],
+    authors: [ null, null ],
+    removedPart: 1,
+    linesBefore: [
+      '  import com.fasterxml.jackson.databind.*;',
+      '  import com.fasterxml.jackson.databind.module.SimpleModule;'
+    ],
+    linesAfter: [ '  ', '  import java.io.IOException;' ]
+  }
+]
+[ '75487feb5784e46dfd8f22dc6573562ef34c2cbf' ]
+VERIFICANDO BRANCH 1
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;',
+      ' +import io.netty.buffer.ByteBufInputStream;',
+      ' +import io.vertx.core.buffer.Buffer;',
+      '++=======',
+      '++>>>>>>> 1ff48fe8a82b5b5e2c33f7ca6b7aa2d2b7c8fe2d'
+    ],
+    authors: [ 'amannocci', null ],
+    removedPart: 1,
+    linesBefore: [
+      '  import com.fasterxml.jackson.databind.*;',
+      '  import com.fasterxml.jackson.databind.module.SimpleModule;'
+    ],
+    linesAfter: [ '  ', '  import java.io.IOException;' ]
+  }
+]
+[ '7a8a362b49664c54b3458cd79ea5454570b27645' ]
+arquivo = src/main/java/io/vertx/core/json/Json.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;',
+      ' +import io.netty.buffer.ByteBufInputStream;',
+      ' +import io.vertx.core.buffer.Buffer;',
+      '++=======',
+      '++>>>>>>> 1ff48fe8a82b5b5e2c33f7ca6b7aa2d2b7c8fe2d'
+    ],
+    authors: [ 'amannocci', null ],
+    removedPart: 1,
+    linesBefore: [
+      '  import com.fasterxml.jackson.databind.*;',
+      '  import com.fasterxml.jackson.databind.module.SimpleModule;'
+    ],
+    linesAfter: [ '  ', '  import java.io.IOException;' ]
+  }
+]
+[cad245] Merge explored
+merge =  164
+[1ff48f] Merge explored
+merge =  165
+[86ee59] Merge explored
+merge =  166
+[18a162] Merge explored
+merge =  167
+[031223] Merge explored
+merge =  168
+[16679f] Merge explored
+merge =  169
+[b40da7] Merge explored
+merge =  170
+[dbcc61] Merge explored
+merge =  171
+[a3b767] Merge fast forward
+merge =  172
+[6becc8] Merge fast forward
+merge =  173
+[af9e4d] Merge explored
+merge =  174
+[0e8829] Merge explored
+merge =  175
+src/main/java/io/vertx/core/http/HttpClientOptions.java => 4 chunks
+VERIFICANDO BRANCH 0
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  /*',
+      ' +   * Default force SNI = false',
+      ' +   */',
+      ' +  public static final boolean DEFAULT_FORCE_SNI = false;',
+      '++=======',
+      '+   /**',
+      '+    * Default initial buffer size for HttpObjectDecoder = 128 bytes',
+      '+    */',
+      '+   public static final int DEFAULT_INITIAL_BUFFER_SIZE_HTTP_DECODER = 128;',
+      '+ ',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [ '    public static final int DEFAULT_MAX_REDIRECTS = 16;', '  ' ],
+    linesAfter: [ '  ', '    private boolean verifyHost = true;' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  private boolean forceSni;',
+      '++=======',
+      '+   private int initialBufferSizeHttpDecoder;',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [
+      '    private boolean sendUnmaskedFrames;',
+      '    private int maxRedirects;'
+    ],
+    linesAfter: [ '  ', '    /**' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    this.forceSni = other.forceSni;',
+      '++=======',
+      '+     this.initialBufferSizeHttpDecoder = other.getInitialBufferSizeHttpDecoder();',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [
+      '      this.sendUnmaskedFrames = other.isSendUnmaskedFrames();',
+      '      this.maxRedirects = other.maxRedirects;'
+    ],
+    linesAfter: [ '    }', '  ' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    forceSni = DEFAULT_FORCE_SNI;',
+      '++=======',
+      '+     initialBufferSizeHttpDecoder = DEFAULT_INITIAL_BUFFER_SIZE_HTTP_DECODER;',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ null, null ],
+    removedPart: -1,
+    linesBefore: [
+      '      sendUnmaskedFrames = DEFAULT_SEND_UNMASKED_FRAMES;',
+      '      maxRedirects = DEFAULT_MAX_REDIRECTS;'
+    ],
+    linesAfter: [ '    }', '  ' ]
+  }
+]
+[ 'aaa89d520502492a955eba1dd4989e017d114fc0' ]
+VERIFICANDO BRANCH 1
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  /*',
+      ' +   * Default force SNI = false',
+      ' +   */',
+      ' +  public static final boolean DEFAULT_FORCE_SNI = false;',
+      '++=======',
+      '+   /**',
+      '+    * Default initial buffer size for HttpObjectDecoder = 128 bytes',
+      '+    */',
+      '+   public static final int DEFAULT_INITIAL_BUFFER_SIZE_HTTP_DECODER = 128;',
+      '+ ',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ 'Julien Viet', null ],
+    removedPart: -1,
+    linesBefore: [ '    public static final int DEFAULT_MAX_REDIRECTS = 16;', '  ' ],
+    linesAfter: [ '  ', '    private boolean verifyHost = true;' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  private boolean forceSni;',
+      '++=======',
+      '+   private int initialBufferSizeHttpDecoder;',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ 'Julien Viet', null ],
+    removedPart: -1,
+    linesBefore: [
+      '    private boolean sendUnmaskedFrames;',
+      '    private int maxRedirects;'
+    ],
+    linesAfter: [ '  ', '    /**' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    this.forceSni = other.forceSni;',
+      '++=======',
+      '+     this.initialBufferSizeHttpDecoder = other.getInitialBufferSizeHttpDecoder();',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ 'Julien Viet', null ],
+    removedPart: -1,
+    linesBefore: [
+      '      this.sendUnmaskedFrames = other.isSendUnmaskedFrames();',
+      '      this.maxRedirects = other.maxRedirects;'
+    ],
+    linesAfter: [ '    }', '  ' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    forceSni = DEFAULT_FORCE_SNI;',
+      '++=======',
+      '+     initialBufferSizeHttpDecoder = DEFAULT_INITIAL_BUFFER_SIZE_HTTP_DECODER;',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ 'Julien Viet', null ],
+    removedPart: -1,
+    linesBefore: [
+      '      sendUnmaskedFrames = DEFAULT_SEND_UNMASKED_FRAMES;',
+      '      maxRedirects = DEFAULT_MAX_REDIRECTS;'
+    ],
+    linesAfter: [ '    }', '  ' ]
+  }
+]
+[ '0b13b42b635143579098d07d346e55f37115e8b9' ]
+arquivo = src/main/java/io/vertx/core/http/HttpClientOptions.java
+[
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  /*',
+      ' +   * Default force SNI = false',
+      ' +   */',
+      ' +  public static final boolean DEFAULT_FORCE_SNI = false;',
+      '++=======',
+      '+   /**',
+      '+    * Default initial buffer size for HttpObjectDecoder = 128 bytes',
+      '+    */',
+      '+   public static final int DEFAULT_INITIAL_BUFFER_SIZE_HTTP_DECODER = 128;',
+      '+ ',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ 'Julien Viet', 'Leonardo FREITAS GOMES' ],
+    removedPart: -1,
+    linesBefore: [ '    public static final int DEFAULT_MAX_REDIRECTS = 16;', '  ' ],
+    linesAfter: [ '  ', '    private boolean verifyHost = true;' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +  private boolean forceSni;',
+      '++=======',
+      '+   private int initialBufferSizeHttpDecoder;',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ 'Julien Viet', 'Leonardo FREITAS GOMES' ],
+    removedPart: -1,
+    linesBefore: [
+      '    private boolean sendUnmaskedFrames;',
+      '    private int maxRedirects;'
+    ],
+    linesAfter: [ '  ', '    /**' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    this.forceSni = other.forceSni;',
+      '++=======',
+      '+     this.initialBufferSizeHttpDecoder = other.getInitialBufferSizeHttpDecoder();',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ 'Julien Viet', 'Leonardo FREITAS GOMES' ],
+    removedPart: -1,
+    linesBefore: [
+      '      this.sendUnmaskedFrames = other.isSendUnmaskedFrames();',
+      '      this.maxRedirects = other.maxRedirects;'
+    ],
+    linesAfter: [ '    }', '  ' ]
+  },
+  {
+    lines: [
+      '++<<<<<<< HEAD',
+      ' +    forceSni = DEFAULT_FORCE_SNI;',
+      '++=======',
+      '+     initialBufferSizeHttpDecoder = DEFAULT_INITIAL_BUFFER_SIZE_HTTP_DECODER;',
+      '++>>>>>>> 51657a46448b98cbf7fa016aacbf4afb3b25d12c'
+    ],
+    authors: [ 'Julien Viet', 'Leonardo FREITAS GOMES' ],
+    removedPart: -1,
+    linesBefore: [
+      '      sendUnmaskedFrames = DEFAULT_SEND_UNMASKED_FRAMES;',
+      '      maxRedirects = DEFAULT_MAX_REDIRECTS;'
+    ],
+    linesAfter: [ '    }', '  ' ]
+  }
+]
+[3ed6ca] Merge explored
+merge =  176
+[51657a] Merge explored
+merge =  177
+[6b3b0b] Merge fast forward
+merge =  178
+[0f07ec] Merge explored
+merge =  179
+[bb92d0] Merge fast forward
+merge =  180
+[04fad2] Merge fast forward
+merge =  181
+[c9bf08] Merge explored
+merge =  182
+[5ad926] Merge explored
+merge =  183
+[d15954] Merge fast forward
+merge =  184
+[a1ca03] Merge explored
+merge =  185
+[99529f] Merge explored
+merge =  186
+[7ac007] Merge explored
+merge =  187
+[336022] Merge explored
+merge =  188
+[fabc72] Merge fast forward
+merge =  189
+[5bfe06] Merge explored
+merge =  190
+[4855ff] Merge explored
+merge =  191
+[3f0e19] Merge explored
+merge =  192
+[f68a15] Merge fast forward
+merge =  193
+[317fae] Merge fast forward
+merge =  194
+[1ad721] Merge fast forward
+merge =  195
+[bc07b4] Merge fast forward
+merge =  196
