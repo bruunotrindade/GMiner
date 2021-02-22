@@ -37,12 +37,12 @@ class Repository {
         return this.runGitCommand(command).split("\n")
     }
 
-    loadMergesData() {
+    loadMergesData(initialize=true) {
         const self = this
-        /*this.merges = this.merges.map((merge) => {
-            return new Merge(self, merge)
-        })*/
-        this.merges = [new Merge(self, "916d068e9c358c0d1cde10872d81f84969854f51")]
+        this.merges = this.merges.slice(1040, 1080).map((merge) => {
+            return new Merge(self, merge, initialize)
+        })
+        //this.merges = [new Merge(self, "916d068e9c358c0d1cde10872d81f84969854f51")]
     }
 
     getCommitAuthor(hash) {

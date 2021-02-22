@@ -8,26 +8,40 @@ const CONFLICT_TAGS = ["<<<<<<<", "=======", ">>>>>>>"]
 
 class Merge {
 
-    constructor(repos, hash) {
-        console.log(`Building merge - ${hash.slice(0, 4)}`)
+    constructor(repos, hash, initialize=true) {
+        this.commit = new Commit(repos, hash, initialize)
+        this.repos = repos
+        this.initialized = initialize
+
+        if(initialize) {
+            this.initialize()
+        }
+    }
+
+    initialize() {
+        console.log(`Building merge - ${this.commit.hash.slice(0, 6)}`)
+        const repos = this.repos
+        const self = this
         const loadParents = () => {
-            const hashes = repos.runGitCommand(`log --pretty=%P -n 1 ${hash}`).split(" ")
+            const hashes = repos.runGitCommand(`log --pretty=%P -n 1 ${self.commit.hash}`).split(" ")
             return [new Commit(repos, hashes[0], true), new Commit(repos, hashes[1], true)]
         }
         const loadBase = () => {
             const baseHash = repos.runGitCommand(`merge-base ${this.parents[0].hash} ${this.parents[1].hash}`)
             return new Commit(repos, baseHash, true)
         }
-        
-        this.commit = new Commit(repos, hash, true)
-        this.repos = repos
+        this.commit.initialize()
         this.parents = loadParents()
         this.base = loadBase()
 
         this.isFastForward = (this.base.hash == this.parents[0].hash || this.base.hash == this.parents[1].hash)
+        this.initialized = true
     }
 
     loadAttributes(timestamp=false, commits=false, committers=false, changedFiles=false, branchingTime=false, mergeTime=false) {
+        if(!this.initialized)
+            this.initialize()
+
         const self = this
         
         const loadTimestamp = () => new Date(this.repos.runGitCommand(`log -1 --pretty=format:%ci ${this.commit.hash}`))
@@ -102,13 +116,19 @@ class Merge {
 
             // Comparing and checking committers intersection
             const checkCommittersIntersection = () => {
-                var sameCount = 0
+                var sameCount = 0, diffCount = 0
                 this.committers[0].forEach((committer) => {
                     const sameCommitter = this.committers[1].find((same) => { return same.name == committer.name || same.email == committer.email })
     
                     if(sameCommitter)
                         sameCount += 1
+                    else
+                        diffCount += 1
                 })
+
+                self.sameCommitterCount = sameCount
+                self.diffCommitterCount = diffCount
+
                 if(sameCount == this.committers[0].length || sameCount == this.committers[1].length)
                     return "ALL"
                 else if(sameCount == 0)
@@ -167,6 +187,9 @@ class Merge {
 
         this.conflict = false
         this.conflictedFiles = []
+        this.chunks = 0
+        this.modifiedChunks = 0
+
         // If merge caused conflict
         if(mergeResponse[mergeResponse.length-1].startsWith("Automatic merge failed;")) {
             this.conflict = true
@@ -174,29 +197,25 @@ class Merge {
             mergeResponse.forEach((line) => {
 
                 // [add/add or content] conflict message
-                console.log("ORIG => " + line)
+                //console.log("ORIG => " + line)
                 if(line.includes("Merge conflict in")) {
                     const filename = line.split("Merge conflict in ")[1]
                     const file = new File(filename)
-                    file.conflictType = "UPDATE"
+                    file.conflictType = "modified/modified"
                     this.conflictedFiles.push(file)
                 }
+                // [rename/delete] conflict message
                 else if(line.startsWith("CONFLICT ")) {
-                    const type = line.match(/[CONFLICT [a-z]*\/[a-z]*/)
-                    const filename = type.contains("rename") ? "" : line.match(/(?=\w*)[\S]*(?= [a-z]* in)/)
+                    const type = line.slice(line.indexOf("(")+1, line.indexOf(")"))
+                    let filename
+                    if(type.includes("rename/rename")) 
+                        filename = line.slice(line.indexOf('"')+1, line.indexOf('"->"'))
+                    else
+                        filename = line.match(/(?=\w*)[\S]*(?= [a-z]* in)/)
+
                     const file = new File(filename)
                     file.conflictType = type
                     this.conflictedFiles.push(file)
-                }
-                // [modify/delete] conflict message
-                else if(line.includes("(modify/delete)")) {
-                    const filename = line.match(/(?<!:)(\w*\-*\.*\/?)*(?= deleted)/)[0]
-                    const file = new File(filename)
-                    file.conflictType = "DELETE"
-                    this.conflictedFiles.push(file)
-                }
-                else {
-                    console.log("DEU RUIM " + line)
                 }
             })
         }
@@ -207,15 +226,20 @@ class Merge {
             this.checkSelfConflict(1)
 
             this.conflictedFiles.forEach(file => {
-                console.log(`arquivo = ${file.fullName}`)
-                console.log(file.chunks)
+                file.chunks.forEach((chunk, chunkIndex) => {
+                    if(chunk['authors'][0] == null ^ chunk['authors'][1] == null) {
+                        this.nullChunks += 1
+                    }
+                    else if(chunk['authors'][0] == chunk['authors'][1]) {
+                        this.selfConflicts += 1
+                    }
+                })
             })
         }
     }
 
     loadChunks() {
         if(this.conflict) {
-            this.chunks = 0
             this.conflictedFiles.forEach(file => {
                 file.chunks = []
                 const diffLines = this.repos.runGitCommandArray(`diff ${file.fullName}`)
@@ -257,7 +281,13 @@ class Merge {
                         chunk['lines'].push(line)
                 })
                 this.chunks += file.chunks.length
-                console.log(`${file.fullName} => ${file.chunks.length} chunks`)
+                if(file.chunks.length == 0) {
+                    file.chunks.push({
+                        "authors": [null, null],
+                    })
+                }
+                this.modifiedChunks += file.chunks.length
+                //console.log(`${file.fullName} => ${file.chunks.length} chunks`)
             })
         }
         else if(this.conflict == null)
@@ -267,12 +297,17 @@ class Merge {
     checkSelfConflict(branch) {
         if(this.conflict) {
             this.selfConflicts = 0
-            console.log(`VERIFICANDO BRANCH ${branch}`)
+            //console.log(`VERIFICANDO BRANCH ${branch}`)
             this.conflictedFiles.forEach(file => {
-                if(file.conflictType != "DELETE") {
-                    console.log(file.chunks)
+                const branchConflictType = file.conflictType.split("/")[branch]
+                if(branchConflictType == "delete" || branchConflictType == "rename") {
+                    //console.log("MODIFIED => ", commitsModified)
+                    const lastHash = this.repos.runGitCommandArray(`log --pretty=format:%H ${this.base.hash}^..${this.parents[branch].hash} --full-history -- ${file.fullName}`)[0]
+                    file.chunks[0]['authors'][branch] = this.repos.getCommitAuthor(lastHash)
+                }
+                else if(branchConflictType == "modified") {
+                    //console.log(file.chunks)
                     const commitsModified = this.repos.runGitCommandArray(`log --pretty=format:%H ${this.base.hash}^..${this.parents[branch].hash} ${file.fullName}`)
-                    console.log(commitsModified)
                     commitsModified.forEach(hash => {
                         let tagStatus = -1
                         let chunkId = 0
@@ -323,10 +358,10 @@ class Merge {
                                 for(let tagStatusI = 0; tagStatusI < 3; tagStatusI++) {
                                     if(line.startsWith("+" + CONFLICT_TAGS[tagStatusI])) {
                                         tagStatus = tagStatusI
- 
+
                                         if(tagStatus == 0) 
                                             lineBeforeChunk = line
- 
+
                                         if(tagStatus == 2) {
                                             chunkId += 1
                                             tagStatus = -1
@@ -337,11 +372,11 @@ class Merge {
 
                                 if(chunkId == chunkIndex) {
                                     if(file.chunks[chunkId]['authors'][branch] == null) {
-                                        if(line.startsWith("-"))
-                                            console.log("LINHA - => ", line, !file.chunks['removedPart'], tagStatus)
-                                        
+                                        if(line.startsWith("-")) {
+                                            //console.log("LINHA - => ", line, !file.chunks['removedPart'], tagStatus)
+                                        }
                                         if(!file.chunks['removedPart'] == tagStatus && (line.startsWith("-"))) {
-                                            console.log("AUTOR SETADO AQUI")
+                                            //console.log("AUTOR SETADO AQUI")
                                             file.chunks[chunkId]['authors'][branch] = this.repos.getCommitAuthor(hashRemovedPart)
                                         }
                                         else if(lineBeforeChunk.startsWith("+")) {
@@ -350,15 +385,6 @@ class Merge {
                                     }
                                 }
                             })
-                        }
-                    })
-
-                    file.chunks.forEach((chunk, chunkIndex) => {
-                        if(chunk['authors'][0] == null ^ chunk['authors'][1] == null) {
-                            this.nullChunks += 1
-                        }
-                        else if(chunk['authors'][0] == chunk['authors'][1]) {
-                            this.selfConflicts += 1
                         }
                     })
                 }
