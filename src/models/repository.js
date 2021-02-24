@@ -39,10 +39,52 @@ class Repository {
 
     loadMergesData(initialize=true) {
         const self = this
-        this.merges = this.merges.slice(1040, 1080).map((merge) => {
+        this.merges = this.merges.map((merge) => {
             return new Merge(self, merge, initialize)
         })
         //this.merges = [new Merge(self, "916d068e9c358c0d1cde10872d81f84969854f51")]
+    }
+
+    buildAuthorsData() {
+        const self = this
+        this.authors = {}
+        this.merges.forEach(merge => {
+            if(merge.conflict == true) {
+                merge.conflictedFiles.forEach(file => {
+                    file.chunks.forEach(chunk => {
+                        if(chunk['authors'][0] == chunk['authors'][1]) {
+                            if(chunk['authors'][0] in self.authors) {
+                                self.authors[chunk['authors'][0]].conflicts += 2
+                                self.authors[chunk['authors'][0]].selfConflicts ++
+                                if(merge.author == chunk['authors'][0])
+                                    self.authors[chunk['authors'][0]].author ++
+                            }
+                            else {
+                                self.authors[chunk['authors'][0]] = {
+                                    name: chunk['authors'][0],
+                                    conflicts: 2,
+                                    selfConflicts: 1,
+                                    author: merge.author == chunk['authors'][0] ? 1 : 0
+                                }
+                            }
+                        }
+                        else {
+                            for(let i = 0; i < 2; i++) 
+                                if(chunk['authors'][i] in self.authors)
+                                    self.authors[chunk['authors'][i]].conflicts ++
+                                else {
+                                    self.authors[chunk['authors'][i]] = {
+                                        name: chunk['authors'][i],
+                                        conflicts: 1,
+                                        selfConflicts: 0,
+                                        author: 0
+                                    }
+                                }
+                        }
+                    })
+                })
+            }
+        })
     }
 
     getCommitAuthor(hash) {

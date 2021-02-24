@@ -16,6 +16,7 @@ class Commit {
 
         this.committer = new Committer(response[0], response[1])
         this.timestamp = new Date(response[2])
+        this.defaultTimestamp = response[2]
         this.unixTime = parseInt(response[3])
         this.initialized = true
     }

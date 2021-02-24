@@ -19,7 +19,7 @@ class Merge {
     }
 
     initialize() {
-        console.log(`Building merge - ${this.commit.hash.slice(0, 6)}`)
+        //console.log(`Building merge - ${this.commit.hash.slice(0, 6)}`)
         const repos = this.repos
         const self = this
         const loadParents = () => {
@@ -33,6 +33,7 @@ class Merge {
         this.commit.initialize()
         this.parents = loadParents()
         this.base = loadBase()
+        this.author = this.repos.getCommitAuthor(this.commit.hash)
 
         this.isFastForward = (this.base.hash == this.parents[0].hash || this.base.hash == this.parents[1].hash)
         this.initialized = true
@@ -94,7 +95,7 @@ class Merge {
 
         const loadBranchingTime = () => {
             const commitsAfterBase = [this.getAfterBaseCommit(0), this.getAfterBaseCommit(1)]
-
+            
             const beginTime = Math.min(commitsAfterBase[0].unixTime, commitsAfterBase[1].unixTime)
             const endTime = Math.max(this.parents[0].unixTime, this.parents[1].unixTime)
 
@@ -117,8 +118,10 @@ class Merge {
             // Comparing and checking committers intersection
             const checkCommittersIntersection = () => {
                 var sameCount = 0, diffCount = 0
-                this.committers[0].forEach((committer) => {
-                    const sameCommitter = this.committers[1].find((same) => { return same.name == committer.name || same.email == committer.email })
+                const max = this.committers[0].length > this.committers[1].length ? this.committers[0] : this.committers[1]
+                const min = this.committers[0].length > this.committers[1].length ? this.committers[1] : this.committers[0]
+                max.forEach((committer) => {
+                    const sameCommitter = min.find((same) => { return same.name == committer.name || same.email == committer.email })
     
                     if(sameCommitter)
                         sameCount += 1
@@ -189,6 +192,7 @@ class Merge {
         this.conflictedFiles = []
         this.chunks = 0
         this.modifiedChunks = 0
+        this.selfConflicts = 0
 
         // If merge caused conflict
         if(mergeResponse[mergeResponse.length-1].startsWith("Automatic merge failed;")) {
@@ -296,7 +300,6 @@ class Merge {
 
     checkSelfConflict(branch) {
         if(this.conflict) {
-            this.selfConflicts = 0
             //console.log(`VERIFICANDO BRANCH ${branch}`)
             this.conflictedFiles.forEach(file => {
                 const branchConflictType = file.conflictType.split("/")[branch]
@@ -396,15 +399,17 @@ class Merge {
 
 
     getAfterBaseCommit(branch) {
-        const parent = this.parents[branch].hash
-        const commits = this.repos.runGitCommandArray(`rev-list --ancestry-path --reverse ${this.base.hash}..${parent}`)
+        const parent = this.parents[branch]
+        const commits = this.repos.runGitCommandArray(`rev-list --ancestry-path --reverse ${this.base.hash}..${parent.hash}`)
         
         var afterBase = null
-        commits.forEach((commit) => {
+        commits.every((commit) => {
             afterBase = new Commit(this.repos, commit, true)
             
             if(afterBase.unixTime <= parent.unixTime && afterBase.unixTime > this.base.unixTime)
-                return
+                return false
+            
+            return true
         })
         return afterBase
     }
