@@ -1,94 +1,102 @@
 import { runGitCommand } from './utils/command'
 import Repository from './models/repository'
+import translateAttribute from './utils/utils'
+import { writeFile } from 'fs'
+
+const MERGE_ATTRIBUTES = {
+    "Hash": "commit.hash",
+    "Timestamp": "commit.defaultTimestamp",
+    "Branching Time": "branchingTime",
+    "Merge Time": "mergeTime",
+    "Committers 1": "committers.0.length",
+    "Committers 2": "committers.1.length",
+    "Diff Committers": "diffCommitterCount",
+    "Same Committers": "sameCommitterCount",
+    "Commits 1": "commits.0",
+    "Commits 2": "commits.1",
+    "Changed Files 1": "changedFiles.0.length",
+    "Changed Files 2": "changedFiles.1.length",
+    "Changed Files Intersection": "changedFilesIntersection",
+    "Conflict": "conflict",
+    "Conflicted Files": "conflictedFiles.length",
+    "Chunks": "chunks",
+    "Modified Chunks": "modifiedChunks",
+    "Self Conflicts": "selfConflicts"
+}
+
+const AUTHOR_ATTRIBUTES = {
+    "Name": "name",
+    "Conflicts": "conflicts",
+    "Self Conflicts": "selfConflicts",
+    "Count when was author": "author"
+}
+
+const DELIMITER = ";"
 
 const repos = new Repository("/home/brunotrindade/NovosReps/Java/vertx")
 
-console.log("TESTE")
-
-repos.loadMergesData()
+repos.loadMergesData(false)
 
 console.log("total = " + repos.merges.length)
 let cont = 0
 repos.merges.forEach(merge => {
     cont += 1
-    console.log("merge = ", cont)
-    if(!merge.isFastForward/* && merge.commit.hash.startsWith("734ab7")*/) {
+    if(!merge.isFastForward) {
         merge.loadAttributes(true, true, true, true, true, true)
-        //console.log(merge.base)
-        //console.log(merge.parents)
-        console.log(`[${merge.commit.hash.substring(0, 6)}] Merge explored`)
-        //console.log(merge)
+        console.log(`[${merge.commit.hash.substring(0, 6)} - ${cont}] Merge explored`)
     }
     else
-        console.log(`[${merge.commit.hash.substring(0, 6)}] Merge fast forward`)
+        console.log(`[${merge.commit.hash.substring(0, 6)} - ${cont}] Merge fast forward`)
 })
 
-let total = 0, nullTotal = 0, selfConflicts = 0, authors = {}
+console.log("\n\n")
+
+// Printing all merge data explored
+console.log("SAVING MERGES DATA...")
+
+let normalHeader = ""
+Object.entries(MERGE_ATTRIBUTES).forEach(([key, value]) => {
+    normalHeader += key + DELIMITER
+})
+
+normalHeader = normalHeader.slice(0, normalHeader.length-1)
+
+let lines = normalHeader + "\n"
 repos.merges.forEach(merge => {
-    if(merge.conflict == true) {
-        
-        console.log(`${merge.commit.hash},${merge.conflictedFiles.length},${merge.chunks},${merge.selfConflicts}`)
-        merge.conflictedFiles.forEach(file => {
-            total += file.chunks.length
-            file.chunks.forEach(chunk => {
-                if(chunk['authors'][0] == '=' || chunk['authors'][1] == '=') {
-                    
-                    console.log(`BUGADO = ${merge.commit.hash}`)
-                    console.log(file)
-                    console.log(chunk)
-                }
-
-
-                if(chunk['authors'][0] == null || chunk['authors'][1] == null) {
-                    nullTotal ++
-                }
-                else if(chunk['authors'][0] == chunk['authors'][1]) {
-                    selfConflicts ++
-                    
-                    if(chunk['authors'][0] in authors) {
-                        authors[chunk['authors'][0]].conflicts ++
-                        authors[chunk['authors'][0]].selfConflicts ++
-                    }
-                    else {
-                        authors[chunk['authors'][0]] = {
-                            name: chunk['authors'][0],
-                            conflicts: 1,
-                            selfConflicts: 1
-                        }
-                    }
-                }
-                else {
-                    for(let i = 0; i < 2; i++) 
-                        if(chunk['authors'][i] in authors)
-                            authors[chunk['authors'][i]].conflicts ++
-                        else {
-                            authors[chunk['authors'][i]] = {
-                                name: chunk['authors'][i],
-                                conflicts: 1,
-                                selfConflicts: 0
-                            }
-                        }
-                }
-            })
+    if(!merge.isFastForward) {
+        let line = ""
+        Object.entries(MERGE_ATTRIBUTES).forEach(([key, value]) => {
+            line += translateAttribute(merge, value) + DELIMITER
         })
+        lines += line.slice(0, line.length-1) + "\n"
     }
 })
 
-console.log("TOTAL DE CHUNKS = " + total)
-console.log("TOTAL DE NULL = " + nullTotal)
-console.log("TOTAL DE SELF CONFLICTS = " + selfConflicts)
-console.log("\n\n")
+writeFile(`${repos.name}.csv`, lines, (err) => { if(err) return console.log(err) })
 
-for (var name of Object.keys(authors)) {
-    const author = authors[name]
-    console.log(`${author.name}\t${author.conflicts}\t${author.selfConflicts}`)
+// =====================================
+
+
+// Printing all authors data
+repos.buildAuthorsData()
+
+console.log("SAVING AUTHORS DATA...")
+
+let authorHeader = ""
+Object.entries(AUTHOR_ATTRIBUTES).forEach(([key, value]) => {
+    authorHeader += key + DELIMITER
+})
+authorHeader = authorHeader.slice(0, authorHeader.length-1)
+
+lines = authorHeader + "\n"
+for (var name of Object.keys(repos.authors)) {
+    const author = repos.authors[name]
+    let line = ""
+    Object.entries(AUTHOR_ATTRIBUTES).forEach(([key, value]) => {
+        line += translateAttribute(author, value) + DELIMITER
+    })
+    lines += line.slice(0, line.length-1) + "\n"
 }
 
-/*repos.merges.forEach((merge) => {
-
-    console.log(merge)
-    console.log(merge.committers[0])
-    console.log(merge.committers[1])
-    console.log(merge.changedFiles[0]);
-    console.log(merge.changedFiles[1]);
-})*/
+writeFile(`${repos.name}-authors.csv`, lines, (err) => { if(err) return console.log(err) })
+// =====================================
