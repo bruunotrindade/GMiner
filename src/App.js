@@ -33,7 +33,7 @@ const AUTHOR_ATTRIBUTES = {
 
 const DELIMITER = ";"
 
-const repos = new Repository("/home/brunotrindade/NovosReps/Java/vertx")
+const repos = new Repository("/home/brunotrindade/NovosReps/JavaScript/webpack")
 
 repos.loadMergesData(false)
 
