@@ -14,6 +14,9 @@ const translateAttribute = (obj, attribute) => {
     })
     if(isFloat(result))
         result = result.toFixed(7)
+    else if(typeof result === "boolean")
+        result = result ? "YES" : "NO"
+        
     return result
 }
 

@@ -35,7 +35,7 @@ class Merge {
         this.base = loadBase()
         this.author = this.repos.getCommitAuthor(this.commit.hash)
 
-        this.isFastForward = (this.base.hash == this.parents[0].hash || this.base.hash == this.parents[1].hash)
+        this.isFastForward = (this.base.hash == this.parents[0].hash || this.base.hash == this.parents[1].hash) ^ this.base.length <= 3
         this.initialized = true
     }
 
@@ -189,6 +189,7 @@ class Merge {
         this.repos.runGitCommand("clean -df")
 
         this.conflict = false
+        this.hasSelfConflict = false
         this.conflictedFiles = []
         this.chunks = 0
         this.modifiedChunks = 0
@@ -214,6 +215,8 @@ class Merge {
                     let filename
                     if(type.includes("rename/rename")) 
                         filename = line.slice(line.indexOf('"')+1, line.indexOf('"->"'))
+                    else if(type.includes("directory/file"))
+                        filename = line.slice(line.indexOf(" name ")+6, line.indexOf(" in "))
                     else
                         filename = line.match(/(?=\w*)[\S]*(?= [a-z]* in)/)
 
@@ -239,6 +242,8 @@ class Merge {
                     }
                 })
             })
+
+            this.hasSelfConflict = this.selfConflicts > 0
         }
     }
 
@@ -259,7 +264,7 @@ class Merge {
                         chunk['linesBefore'] = [diffLines[index-2], diffLines[index-1]]
 
                         //Caso a próxima linha seja o marcador do meio, então a parte 1 foi removida
-                        if(diffLines[index+1].replace(/\+/g, "").startsWith(CONFLICT_TAGS[1])) {
+                        if(index+1 < diffLines.length && diffLines[index+1].replace(/\+/g, "").startsWith(CONFLICT_TAGS[1])) {
                             chunk['removedPart'] = 0
                         }
                     }
