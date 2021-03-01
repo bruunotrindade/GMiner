@@ -1,7 +1,7 @@
-import Committer from '../models/committer'
-import File from './file'
-import Commit from './commit'
-import { secondsToDays } from '../utils/time'
+import Committer from '../models/committer.js'
+import File from './file.js'
+import Commit from './commit.js'
+import { secondsToDays } from '../utils/time.js'
 
 const MERGE_DIDNT_DONE = "redoMerge() must be ran before using this method.";
 const CONFLICT_TAGS = ["<<<<<<<", "=======", ">>>>>>>"]
