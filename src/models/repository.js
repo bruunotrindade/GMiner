@@ -8,7 +8,7 @@ class Repository {
         if(!valid)
             throw new Error("Invalid repository")
 
-        const loadMerges = function() {
+        const loadMerges = function(date=null) {
             const cmd = "log --all --merges --pretty=%H" + (date ? `--before='${date}'` : '')
             return self.runGitCommandArray(cmd)
         }
@@ -42,7 +42,7 @@ class Repository {
         this.merges = this.merges.map((merge) => {
             return new Merge(self, merge, initialize)
         })
-        //this.merges = [new Merge(self, "916d068e9c358c0d1cde10872d81f84969854f51")]
+        //this.merges = [new Merge(self, "ab6d0b8d70c61e89db751c73868b2eb89c88b787")]
     }
 
     buildAuthorsData() {

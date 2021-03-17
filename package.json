@@ -6,10 +6,13 @@
   "type": "module",
   "main": "App.js",
   "scripts": {
-    "start": "babel-node src/App.js --presets env"
+    "start": "babel-node src/App.js --presets env",
+    "fix-memory-limit": "cross-env LIMIT=2048 increase-memory-limit"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0"
+    "babel-preset-env": "^1.7.0",
+    "increase-memory-limit": "^1.0.3",
+    "cross-env": "^5.0.5"
   }
 }
