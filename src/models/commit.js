@@ -1,4 +1,4 @@
-import Committer from "./committer.js"
+import Committer from "./committer"
 
 class Commit {
     constructor(repos, hash, initialize=false) {

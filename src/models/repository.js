@@ -1,5 +1,5 @@
-import { execSync } from 'child_process'
-import Merge from '../models/merge.js';
+const { execSync } = require("child_process");
+import Merge from '../models/merge';
 
 class Repository {
 
@@ -24,9 +24,9 @@ class Repository {
             response = execSync("git " + command, { cwd: this.dir, stdio: 'pipe' }).toString("utf8")
         }
         catch(e) {
-            console.error("/==================/ ERRO /==================/");
-            console.error(e)
-            console.error("/============================================/")
+            /*console.error("/==================/ ERRO /==================/");
+            console.error(e.output.toString("utf8"))
+            console.error("/============================================/")*/
             response = e.output.toString("utf8").substring(1)
         }
         const last = response.lastIndexOf("\n")

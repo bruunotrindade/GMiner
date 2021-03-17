@@ -1,5 +1,6 @@
-import Repository from './models/repository.js'
-import translateAttribute from './utils/utils.js'
+import { runGitCommand } from './utils/command'
+import Repository from './models/repository'
+import translateAttribute from './utils/utils'
 import { writeFile } from 'fs'
 
 const MERGE_ATTRIBUTES = {
@@ -32,7 +33,7 @@ const AUTHOR_ATTRIBUTES = {
 
 const DELIMITER = ";"
 
-const repos = new Repository("./container/vert.x")
+const repos = new Repository("/home/brunotrindade/NovosReps/Java/vertx")
 
 repos.loadMergesData(false)
 
