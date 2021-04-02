@@ -1,5 +1,6 @@
 const { execSync } = require("child_process");
 import Merge from '../models/merge';
+import { secondsToDays } from '../utils/time'
 
 class Repository {
 
@@ -52,21 +53,28 @@ class Repository {
             if(merge.conflict == true) {
                 merge.conflictedFiles.forEach(file => {
                     file.chunks.forEach(chunk => {
-                        if(chunk['authors'][0] == chunk['authors'][1]) {
-                            if(chunk['authors'][0] in self.authors) {
-                                self.authors[chunk['authors'][0]].conflicts += 2
-                                self.authors[chunk['authors'][0]].selfConflicts ++
-                                if(merge.author == chunk['authors'][0])
-                                    self.authors[chunk['authors'][0]].author ++
+                        if(chunk['authors'][0] == chunk['authors'][1] && chunk['authors'][0]) {
+
+                            const authorName = chunk['authors'][0]
+
+                            if(authorName in self.authors) {
+                                self.authors[authorName].conflicts += 2
+                                self.authors[authorName].selfConflicts ++
+                                if(merge.author == authorName)
+                                    self.authors[authorName].author ++
+
                             }
                             else {
-                                self.authors[chunk['authors'][0]] = {
-                                    name: chunk['authors'][0],
+                                self.authors[authorName] = {
+                                    name: authorName,
                                     conflicts: 2,
                                     selfConflicts: 1,
-                                    author: merge.author == chunk['authors'][0] ? 1 : 0
+                                    author: merge.author == authorName ? 1 : 0,
+                                    selfConflictsOccurrenceAvg: 0
                                 }
                             }
+                            self.authors[authorName].selfConflictsOccurrenceAvg += secondsToDays(
+                                Math.abs(chunk['commits'][0].unixTime - chunk['commits'][1].unixTime))
                         }
                         else {
                             for(let i = 0; i < 2; i++) 
@@ -77,7 +85,8 @@ class Repository {
                                         name: chunk['authors'][i],
                                         conflicts: 1,
                                         selfConflicts: 0,
-                                        author: 0
+                                        author: 0,
+                                        selfConflictsOccurrenceAvg: 0
                                     }
                                 }
                         }
@@ -85,6 +94,13 @@ class Repository {
                 })
             }
         })
+
+        for (var name of Object.keys(this.authors)) {
+            const author = this.authors[name]
+            if(author.selfConflicts > 0) {
+                this.authors[name].selfConflictsOccurrenceAvg = author.selfConflictsOccurrenceAvg / author.selfConflicts
+            }
+        }
     }
 
     getCommitAuthor(hash) {

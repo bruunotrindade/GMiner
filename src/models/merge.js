@@ -106,7 +106,7 @@ class Merge {
             return secondsToDays(this.commit.unixTime-this.base.unixTime)
         }
 
-        const loadCommitsTotal = (branch) => this.repos.runGitCommand(`rev-list --count ${this.base.hash}..${this.parents[branch].hash}`)
+        const loadCommitsTotal = (branch) => parseInt(this.repos.runGitCommand(`rev-list --count ${this.base.hash}..${this.parents[branch].hash}`))
 
         // If timestamp must be loaded
         this.timestamp = timestamp ? loadTimestamp() : null
@@ -176,7 +176,6 @@ class Merge {
         // If commits numbers must be loaded
         this.commits = commits ? [loadCommitsTotal(0), loadCommitsTotal(1)] : null
 
-
         this.redoMerge(true)
     }
 
@@ -194,6 +193,29 @@ class Merge {
         this.chunks = 0
         this.modifiedChunks = 0
         this.selfConflicts = 0
+        this.filesWithSelfConflict = 0
+        this.chunksPerConflictedFile = 0.0
+        this.chunksPerSelfConflictedFile = 0.0
+        this.selfConflictChunksPerFileWithConflict = 0.0
+        this.selfConflictChunksPerFileWithSelfConflict = 0.0
+        this.selfConflictOccurrenceAvg = 0.0
+        this.chunkLines = [0.0, 0.0]
+        this.typesOfConflict = {
+            "modified/modified": 0,
+            "modify/delete": 0,
+            "rename/delete": 0,
+            "rename/rename": 0
+        }
+
+        /*
+        Média de chunks por arquivo
+        Média de chunks por arquivo em conflito
+        Média de autoconflitos por arquivo
+        Média de autoconflitos por arquivo em conflito
+        Média de autoconflitos por arquivo com autoconflito
+        Média de tamanho de cada chunk (p/ ramo 1 e p/ ramo 2)
+        Ocorrência de cada tipo de autoconflito (remove, modified, rename, etc...)
+        */
 
         // If merge caused conflict
         if(mergeResponse[mergeResponse.length-1].startsWith("Automatic merge failed;")) {
@@ -208,6 +230,11 @@ class Merge {
                     const file = new File(filename)
                     file.conflictType = "modified/modified"
                     this.conflictedFiles.push(file)
+
+                    if(this.typesOfConflict[file.conflictType] == null)
+                        this.typesOfConflict[file.conflictType] = 1
+                    else
+                        this.typesOfConflict[file.conflictType] += 1
                 }
                 // [rename/delete] conflict message
                 else if(line.startsWith("CONFLICT ")) {
@@ -223,27 +250,65 @@ class Merge {
                     const file = new File(filename)
                     file.conflictType = type
                     this.conflictedFiles.push(file)
+
+                    if(this.typesOfConflict[file.conflictType] == null)
+                        this.typesOfConflict[file.conflictType] = 1
+                    else
+                        this.typesOfConflict[file.conflictType] += 1
                 }
             })
         }
 
-        if(chunks) {
+        console.log(this.typesOfConflict)
+
+        if(chunks && this.conflict) {
             this.loadChunks();
             this.checkSelfConflict(0)
             this.checkSelfConflict(1)
 
             this.conflictedFiles.forEach(file => {
+                const self = this
                 file.chunks.forEach((chunk, chunkIndex) => {
                     if(chunk['authors'][0] == null ^ chunk['authors'][1] == null) {
                         this.nullChunks += 1
                     }
-                    else if(chunk['authors'][0] == chunk['authors'][1]) {
+                    else if(chunk['authors'][0] == chunk['authors'][1] && chunk['authors'][0] != null) {
                         this.selfConflicts += 1
+                        file.selfConflict = true
+                        file.selfConflicts += 1
+
+                        console.log(chunk)
+
+                        this.selfConflictOccurrenceAvg += secondsToDays(
+                            Math.abs(chunk['commits'][0].unixTime - chunk['commits'][1].unixTime))
                     }
+
+                    if(chunk.branchLines == null)
+                        console.log(chunk)
+
+                    this.chunkLines[0] += chunk.branchLines[0]
+                    this.chunkLines[1] += chunk.branchLines[1]
                 })
+
+                if(file.selfConflict == null)
+                    file.selfConflict = false
+                else
+                    self.filesWithSelfConflict += 1
             })
 
             this.hasSelfConflict = this.selfConflicts > 0
+
+            this.chunksPerConflictedFile = this.modifiedChunks / this.conflictedFiles.length
+            
+            if(this.hasSelfConflict) {
+                this.chunksPerSelfConflictedFile = this.modifiedChunks / this.filesWithSelfConflict
+                this.selfConflictChunksPerFileWithConflict = this.selfConflicts / this.conflictedFiles.length
+                this.selfConflictChunksPerFileWithSelfConflict = this.selfConflicts / this.filesWithSelfConflict
+                this.selfConflictOccurrenceAvg = this.selfConflictOccurrenceAvg / this.selfConflicts
+            }
+
+            console.log(this.chunkLines)
+            this.chunkLines = [this.chunkLines[0] / this.conflictedFiles.length, this.chunkLines[1] / this.conflictedFiles.length]
         }
     }
 
@@ -256,7 +321,9 @@ class Merge {
                 let chunk = {
                     "lines": [],
                     "authors": [null, null],
-                    "removedPart": -1
+                    "commits": [null, null],
+                    "removedPart": -1,
+                    "branchLines": [0, 0]
                 }
                 diffLines.forEach((line, index) => {
                     if(line.replace(/\+/g, "").startsWith(CONFLICT_TAGS[0])) {
@@ -271,6 +338,7 @@ class Merge {
                     else if(line.replace(/\+/g, "").startsWith(CONFLICT_TAGS[2])) {
                         tagStatus = 0;
 
+                        chunk['branchLines'][1] = chunk['lines'].length - chunk['branchLines'][1] - 1
                         chunk['linesAfter'] = [diffLines[index+1], diffLines[index+2]]
 
                         //Caso a linha anterior seja o marcador do meio, então a parte 2 foi removida
@@ -282,17 +350,26 @@ class Merge {
                         chunk = {
                             "lines": [],
                             "authors": [null, null],
-                            "removedPart": -1
+                            "commits": [null, null],
+                            "removedPart": -1,
+                            "branchLines": [0, 0],
                         }
                     }
-                    
-                    if(tagStatus == 1)
+
+                    if(tagStatus == 1) {
                         chunk['lines'].push(line)
+
+                        if(diffLines[index+1].replace(/\+/g, "").startsWith(CONFLICT_TAGS[1])) {
+                            chunk['branchLines'][0] = chunk['lines'].length - 1
+                        }
+                    }
                 })
                 this.chunks += file.chunks.length
                 if(file.chunks.length == 0) {
                     file.chunks.push({
                         "authors": [null, null],
+                        "commits": [null, null],
+                        "branchLines": [0, 0]
                     })
                 }
                 this.modifiedChunks += file.chunks.length
@@ -311,7 +388,10 @@ class Merge {
                 if(branchConflictType == "delete" || branchConflictType == "rename") {
                     //console.log("MODIFIED => ", commitsModified)
                     const lastHash = this.repos.runGitCommandArray(`log --pretty=format:%H ${this.base.hash}^..${this.parents[branch].hash} --full-history -- ${file.fullName}`)[0]
-                    file.chunks[0]['authors'][branch] = this.repos.getCommitAuthor(lastHash)
+                    
+                    const commit = new Commit(this.repos, lastHash, true)
+                    file.chunks[0]['commits'][branch] = commit
+                    file.chunks[0]['authors'][branch] = commit.committer.name
                 }
                 else if(branchConflictType == "modified") {
                     //console.log(file.chunks)
@@ -343,7 +423,9 @@ class Merge {
                             if(chunkId < file.chunks.length) {
                                 if(file.chunks[chunkId]['authors'][branch] == null) {
                                     if((branch == tagStatus && !line.startsWith("+")) || (!file.chunks['removedPart'] == tagStatus && line.startsWith("-"))) {
-                                        file.chunks[chunkId]['authors'][branch] = this.repos.getCommitAuthor(hash)
+                                        const commit = new Commit(this.repos, hash, true)
+                                        file.chunks[chunkId]['commits'][branch] = commit
+                                        file.chunks[chunkId]['authors'][branch] = commit.committer.name
                                     }
                                 }
                             }
@@ -385,10 +467,14 @@ class Merge {
                                         }
                                         if(!file.chunks['removedPart'] == tagStatus && (line.startsWith("-"))) {
                                             //console.log("AUTOR SETADO AQUI")
-                                            file.chunks[chunkId]['authors'][branch] = this.repos.getCommitAuthor(hashRemovedPart)
+                                            const commit = new Commit(this.repos, hashRemovedPart, true)
+                                            file.chunks[chunkId]['commits'][branch] = commit
+                                            file.chunks[chunkId]['authors'][branch] = commit.committer.name
                                         }
                                         else if(lineBeforeChunk.startsWith("+")) {
-                                            file.chunks[chunkId]['authors'][branch] = this.repos.getCommitAuthor(hashRemovedPart)
+                                            const commit = new Commit(this.repos, hashRemovedPart, true)
+                                            file.chunks[chunkId]['commits'][branch] = commit
+                                            file.chunks[chunkId]['authors'][branch] = commit.committer.name
                                         }
                                     }
                                 }

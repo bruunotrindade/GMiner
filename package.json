@@ -6,7 +6,7 @@
   "type": "module",
   "main": "App.js",
   "scripts": {
-    "start": "babel-node src/App.js --presets env",
+    "start": "babel-node src/App.js --max_old_space_size=10240 --presets env",
     "fix-memory-limit": "cross-env LIMIT=2048 increase-memory-limit"
   },
   "dependencies": {
