@@ -22,21 +22,34 @@ const MERGE_ATTRIBUTES = {
     "Chunks": "chunks",
     "Modified Chunks": "modifiedChunks",
     "Has Self Conflict?": "hasSelfConflict",
-    "Self Conflicts": "selfConflicts"
+    "Self Conflicts": "selfConflicts",
+    "Files With Self Conflict": "filesWithSelfConflict",
+    "Time between Self Conflict commits (AVG)": "selfConflictOccurrenceAvg",
+    "Chunks Per Conflicted File": "chunksPerConflictedFile",
+    "Chunks Per Self Conflicted File": "chunksPerSelfConflictedFile",
+    "Self Conflict Chunks Per File With Conflict": "selfConflictChunksPerFileWithConflict",
+    "Self Conflict Chunks Per File With Self Conflict": "selfConflictChunksPerFileWithSelfConflict",
+    "AVG of Chunk Lines 1": "chunkLines.0",
+    "AVG of Chunk Lines 2": "chunkLines.1",
+    "Type of Conflict - modified/modified": "typesOfConflict.modified/modified",
+    "Type of Conflict - modify/delete": "typesOfConflict.modify/delete",
+    "Type of Conflict - rename/delete": "typesOfConflict.rename/delete",
+    "Type of Conflict - rename/rename": "typesOfConflict.rename/rename",
 }
 
 const AUTHOR_ATTRIBUTES = {
     "Name": "name",
     "Conflicts": "conflicts",
     "Self Conflicts": "selfConflicts",
-    "Count when was author": "author"
+    "Count when was author": "author",
+    "Time of self conflict (AVG)": "selfConflictsOccurrenceAvg"
 }
 
 const DELIMITER = ";"
 
-const PATH = "/home/brunotrindade/NovosReps/cp-rm"
+const PATH = "/home/brunotrindade/NovosReps/JS-rm"
 
-const OUTPUT_FOLDER = "C++"
+const OUTPUT_FOLDER = "Jsrm"
 
 const getDirectories = source =>
   readdirSync(source, { withFileTypes: true })
@@ -80,6 +93,10 @@ for(let rep of reps) {
     let lines = normalHeader + "\n"
     repos.merges.forEach(merge => {
         if(!merge.isFastForward) {
+
+            if(isNaN(merge.commits[0]) || isNaN(merge.commits[1]))
+                return
+
             let line = ""
             Object.entries(MERGE_ATTRIBUTES).forEach(([key, value]) => {
                 line += translateAttribute(merge, value) + DELIMITER

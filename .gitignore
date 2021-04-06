@@ -105,3 +105,5 @@ dist
 *.csv
 container/*
 err
+
+Resultados*
