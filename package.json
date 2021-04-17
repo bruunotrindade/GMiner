@@ -6,13 +6,15 @@
   "type": "module",
   "main": "App.js",
   "scripts": {
+    "a": "babel-node -- a.js  parse url1 url2 url3  -x",
     "start": "babel-node src/App.js --max_old_space_size=10240 --presets env",
     "fix-memory-limit": "cross-env LIMIT=2048 increase-memory-limit"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "cross-env": "^5.0.5",
     "increase-memory-limit": "^1.0.3",
-    "cross-env": "^5.0.5"
+    "prompt-sync": "^4.2.0"
   }
 }

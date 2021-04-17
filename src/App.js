@@ -1,7 +1,8 @@
-import { runGitCommand } from './utils/command'
 import Repository from './models/repository'
 import translateAttribute from './utils/utils'
+import printSoftwareInfo from './utils/info'
 import { writeFileSync, readdirSync, existsSync, mkdirSync } from 'fs'
+const prompt = require("prompt-sync")()
 
 const MERGE_ATTRIBUTES = {
     "Hash": "commit.hash",
@@ -45,22 +46,35 @@ const AUTHOR_ATTRIBUTES = {
     "Time of self conflict (AVG)": "selfConflictsOccurrenceAvg"
 }
 
-const DELIMITER = ";"
+printSoftwareInfo()
 
-const PATH = "/home/brunotrindade/NovosReps/JS-rm"
+const DELIMITER = 'DELIMITER' in process.env ? process.env.DELIMITER : prompt("Delimiter: ")
 
-const OUTPUT_FOLDER = "Jsrm"
+const MODE = 'MODE' in process.env ? process.env.MODE : prompt("Input Mode (1 => single repository, 2 => all the folder): ")
 
-const getDirectories = source =>
-  readdirSync(source, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => source + "/" + dirent.name)
+let reps = []
 
-const reps = getDirectories(PATH)
-console.log(reps)
+if(MODE == 1) {
+    const REPO_PATHS = 'INPUT_DATA' in process.env ? process.env.INPUT_DATA : prompt("Repos paths separated by semicolon(;): ")
+    reps = REPO_PATHS.split(";")
+    console.log("[INFO] Reading specified repositories (mode 1)...")
+}
+else if(MODE == 2) {
+    const INPUT_FOLDER = 'INPUT_DATA' in process.env ? process.env.INPUT_DATA : prompt("Input folder path: ")
+    const getDirectories = source =>
+        readdirSync(source, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .map(dirent => source + "/" + dirent.name)
+
+    reps = getDirectories(INPUT_FOLDER)
+    console.log("[INFO] Reading specified folder (mode 2)...")
+}
+
+const OUTPUT_FOLDER = 'OUTPUT_FOLDER' in process.env ? process.env.OUTPUT_FOLDER : prompt("Output folder: ")
+console.log(`[INFO] Output folder: ${OUTPUT_FOLDER}`)
 
 for(let rep of reps) {
-    console.log(rep)
+    console.log(`[START] Current repository: ${rep}`)
     const repos = new Repository(rep)
 
     repos.loadMergesData(false)

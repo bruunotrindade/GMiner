@@ -104,6 +104,8 @@ dist
 .tern-port
 *.csv
 container/*
+input/*
+package-lock.json
 err
 
 Resultados*

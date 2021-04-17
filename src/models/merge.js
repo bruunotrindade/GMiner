@@ -259,8 +259,6 @@ class Merge {
             })
         }
 
-        console.log(this.typesOfConflict)
-
         if(chunks && this.conflict) {
             this.loadChunks();
             this.checkSelfConflict(0)
