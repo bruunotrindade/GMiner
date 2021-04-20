@@ -1,6 +1,6 @@
-const { execSync } = require("child_process");
-import Merge from '../models/merge';
-import { secondsToDays } from '../utils/time'
+import { execSync } from "child_process"
+import Merge from './/merge.js';
+import { secondsToDays } from '../utils/time.js'
 
 class Repository {
 

@@ -1,8 +1,10 @@
-import Repository from './models/repository'
-import translateAttribute from './utils/utils'
-import printSoftwareInfo from './utils/info'
+import Repository from './models/repository.js'
+import translateAttribute from './utils/utils.js'
+import printSoftwareInfo from './utils/info.js'
 import { writeFileSync, readdirSync, existsSync, mkdirSync } from 'fs'
-const prompt = require("prompt-sync")()
+import promptSync from 'prompt-sync';
+
+const prompt = promptSync()
 
 const MERGE_ATTRIBUTES = {
     "Hash": "commit.hash",
