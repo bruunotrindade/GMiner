@@ -105,6 +105,8 @@ dist
 *.csv
 container/*
 input/*
+hashes/*
+results/*
 package-lock.json
 err
 

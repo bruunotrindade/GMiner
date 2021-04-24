@@ -38,11 +38,21 @@ class Repository {
         return this.runGitCommand(command).split("\n")
     }
 
-    loadMergesData(initialize=true) {
+    loadMergesData(initialize=true, conflictHashes=null) {
         const self = this
         this.merges = this.merges.map((merge) => {
             return new Merge(self, merge, initialize)
         })
+
+        if(conflictHashes) {
+            this.merges.forEach((merge) => {
+                const HASH = conflictHashes[merge.commit.hash]
+                if(HASH)
+                    merge.conflict = true
+                else
+                    merge.conflict = false
+            })
+        }
     }
 
     buildAuthorsData() {

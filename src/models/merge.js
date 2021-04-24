@@ -180,15 +180,7 @@ class Merge {
     }
 
     redoMerge(chunks=false) {
-        this.repos.runGitCommand("reset --hard")
-        this.repos.runGitCommand(`checkout -f ${this.parents[0].hash}`)
 
-        const mergeResponse = this.repos.runGitCommandArray(`merge --no-commit ${this.parents[1].hash}`)
-
-        // Cleaning untracked files
-        this.repos.runGitCommand("clean -df")
-
-        this.conflict = false
         this.hasSelfConflict = false
         this.conflictedFiles = []
         this.chunks = 0
@@ -211,16 +203,21 @@ class Merge {
             "rename/rename": 0
         }
 
-        /*
-        Média de chunks por arquivo
-        Média de chunks por arquivo em conflito
-        Média de autoconflitos por arquivo
-        Média de autoconflitos por arquivo em conflito
-        Média de autoconflitos por arquivo com autoconflito
-        Média de tamanho de cada chunk (p/ ramo 1 e p/ ramo 2)
-        Ocorrência de cada tipo de autoconflito (remove, modified, rename, etc...)
-        */
+        // Stop running if conflict is false
+        if(this.conflict == false) {
+            return
+        }
 
+        this.repos.runGitCommand("reset --hard")
+        this.repos.runGitCommand(`checkout -f ${this.parents[0].hash}`)
+
+        const mergeResponse = this.repos.runGitCommandArray(`merge --no-commit ${this.parents[1].hash}`)
+
+        // Cleaning untracked files
+        this.repos.runGitCommand("clean -df")
+
+        this.conflict = false
+        
         // If merge caused conflict
         if(mergeResponse[mergeResponse.length-1].startsWith("Automatic merge failed;")) {
             this.conflict = true

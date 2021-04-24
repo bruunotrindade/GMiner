@@ -1,5 +1,5 @@
 import Repository from './models/repository.js'
-import translateAttribute from './utils/utils.js'
+import translateAttribute, { getDirectories, generateHashesJSONFromFile } from './utils/utils.js'
 import printSoftwareInfo from './utils/info.js'
 import { writeFileSync, readdirSync, existsSync, mkdirSync } from 'fs'
 import promptSync from 'prompt-sync';
@@ -67,23 +67,32 @@ if(MODE == 1) {
 }
 else if(MODE == 2) {
     const INPUT_FOLDER = 'INPUT_DATA' in process.env ? process.env.INPUT_DATA : prompt("Input folder path: ")
-    const getDirectories = source =>
-        readdirSync(source, { withFileTypes: true })
-            .filter(dirent => dirent.isDirectory())
-            .map(dirent => source + "/" + dirent.name)
 
     reps = getDirectories(INPUT_FOLDER)
     console.log("[INFO] Reading specified folder (mode 2)...")
 }
 
 const OUTPUT_FOLDER = 'OUTPUT_FOLDER' in process.env ? process.env.OUTPUT_FOLDER : prompt("Output folder: ")
+
+const REPO_CONFLICT_HASHES_FOLDER = 'REPO_CONFLICT_HASHES_FOLDER' in process.env ? process.env.REPO_CONFLICT_HASHES_FOLDER : prompt("Folder with repo conflict hashes to input (empty, if none): ")
+
 console.log(`[INFO] Output folder: ${OUTPUT_FOLDER}`)
+console.log(`[INFO] Folder with repo conflict hashes to input: ${REPO_CONFLICT_HASHES_FOLDER}`)
+
+if (!existsSync(OUTPUT_FOLDER)){
+    mkdirSync(OUTPUT_FOLDER);
+}
 
 for(let rep of reps) {
     console.log(`[START] Current repository: ${rep}`)
+    
     const repos = new Repository(rep)
+    const hashes = generateHashesJSONFromFile(REPO_CONFLICT_HASHES_FOLDER, repos.name)
 
-    repos.loadMergesData(false)
+    if(!hashes && REPO_CONFLICT_HASHES_FOLDER.length > 1)
+        console.log("[ERROR] File with merge hashes was not found!")
+    
+    repos.loadMergesData(false, hashes)
 
     console.log("total = " + repos.merges.length)
     let cont = 0
@@ -125,9 +134,6 @@ for(let rep of reps) {
         }
     })
 
-    if (!existsSync(OUTPUT_FOLDER)){
-        mkdirSync(OUTPUT_FOLDER);
-    }
     console.log("SIZE = " + lines.length)
     writeFileSync(`${OUTPUT_FOLDER}/${repos.name}.csv`, lines, (err) => { if(err) return console.log(err) })
 
