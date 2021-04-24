@@ -43,7 +43,6 @@ class Repository {
         this.merges = this.merges.map((merge) => {
             return new Merge(self, merge, initialize)
         })
-        //this.merges = [new Merge(self, "ab6d0b8d70c61e89db751c73868b2eb89c88b787")]
     }
 
     buildAuthorsData() {
@@ -70,11 +69,16 @@ class Repository {
                                     conflicts: 2,
                                     selfConflicts: 1,
                                     author: merge.author == authorName ? 1 : 0,
-                                    selfConflictsOccurrenceAvg: 0
+                                    selfConflictsOccurrenceAvg: 0,
+                                    lastSelfConflictToMergeAvg: 0
                                 }
                             }
                             self.authors[authorName].selfConflictsOccurrenceAvg += secondsToDays(
                                 Math.abs(chunk['commits'][0].unixTime - chunk['commits'][1].unixTime))
+
+                            let max = Math.max(chunk['commits'][0].unixTime, chunk['commits'][1].unixTime)
+                            self.authors[authorName].lastSelfConflictToMergeAvg += secondsToDays(
+                                merge.commit.unixTime - max)
                         }
                         else {
                             for(let i = 0; i < 2; i++) 
@@ -86,7 +90,8 @@ class Repository {
                                         conflicts: 1,
                                         selfConflicts: 0,
                                         author: 0,
-                                        selfConflictsOccurrenceAvg: 0
+                                        selfConflictsOccurrenceAvg: 0,
+                                        lastSelfConflictToMergeAvg: 0
                                     }
                                 }
                         }
@@ -99,6 +104,7 @@ class Repository {
             const author = this.authors[name]
             if(author.selfConflicts > 0) {
                 this.authors[name].selfConflictsOccurrenceAvg = author.selfConflictsOccurrenceAvg / author.selfConflicts
+                this.authors[name].lastSelfConflictToMergeAvg = author.lastSelfConflictToMergeAvg / author.selfConflicts
             }
         }
     }

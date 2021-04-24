@@ -184,6 +184,7 @@ class Merge {
         this.repos.runGitCommand(`checkout -f ${this.parents[0].hash}`)
 
         const mergeResponse = this.repos.runGitCommandArray(`merge --no-commit ${this.parents[1].hash}`)
+
         // Cleaning untracked files
         this.repos.runGitCommand("clean -df")
 
@@ -197,8 +198,11 @@ class Merge {
         this.chunksPerConflictedFile = 0.0
         this.chunksPerSelfConflictedFile = 0.0
         this.selfConflictChunksPerFileWithConflict = 0.0
+        this.selfConflictChunksPerFileWithConflictRel = 0.0
         this.selfConflictChunksPerFileWithSelfConflict = 0.0
+        this.selfConflictChunksPerFileWithSelfConflictRel = 0.0
         this.selfConflictOccurrenceAvg = 0.0
+        this.lastSelfConflictToMergeAvg = 0.0
         this.chunkLines = [0.0, 0.0]
         this.typesOfConflict = {
             "modified/modified": 0,
@@ -264,34 +268,47 @@ class Merge {
             this.checkSelfConflict(0)
             this.checkSelfConflict(1)
 
+            const self = this
+            let selfConflictChunkRel = 0.0
             this.conflictedFiles.forEach(file => {
-                const self = this
+                file.selfConflictChunkRel = 0.0
+
                 file.chunks.forEach((chunk, chunkIndex) => {
+                    chunk.selfConflict = false
                     if(chunk['authors'][0] == null ^ chunk['authors'][1] == null) {
-                        this.nullChunks += 1
+                        self.nullChunks += 1
                     }
                     else if(chunk['authors'][0] == chunk['authors'][1] && chunk['authors'][0] != null) {
-                        this.selfConflicts += 1
+                        self.selfConflicts += 1
+                        chunk.selfConflict = true
                         file.selfConflict = true
                         file.selfConflicts += 1
 
                         console.log(chunk)
 
-                        this.selfConflictOccurrenceAvg += secondsToDays(
+                        self.selfConflictOccurrenceAvg += secondsToDays(
                             Math.abs(chunk['commits'][0].unixTime - chunk['commits'][1].unixTime))
+
+                        let max = Math.max(chunk['commits'][0].unixTime, chunk['commits'][1].unixTime)
+                        self.lastSelfConflictToMergeAvg += secondsToDays(
+                            self.commit.unixTime - max)
                     }
 
                     if(chunk.branchLines == null)
                         console.log(chunk)
 
-                    this.chunkLines[0] += chunk.branchLines[0]
-                    this.chunkLines[1] += chunk.branchLines[1]
+                    self.chunkLines[0] += chunk.branchLines[0]
+                    self.chunkLines[1] += chunk.branchLines[1]
                 })
 
-                if(file.selfConflict == null)
+                if(file.selfConflict == null) {
                     file.selfConflict = false
-                else
+                }
+                else {
+                    file.selfConflictChunkRel = file.selfConflicts / file.chunks.length
                     self.filesWithSelfConflict += 1
+                    selfConflictChunkRel += file.selfConflictChunkRel
+                }
             })
 
             this.hasSelfConflict = this.selfConflicts > 0
@@ -301,8 +318,11 @@ class Merge {
             if(this.hasSelfConflict) {
                 this.chunksPerSelfConflictedFile = this.modifiedChunks / this.filesWithSelfConflict
                 this.selfConflictChunksPerFileWithConflict = this.selfConflicts / this.conflictedFiles.length
+                self.selfConflictChunksPerFileWithConflictRel = selfConflictChunkRel / this.conflictedFiles.length
                 this.selfConflictChunksPerFileWithSelfConflict = this.selfConflicts / this.filesWithSelfConflict
+                self.selfConflictChunksPerFileWithSelfConflictRel = selfConflictChunkRel / this.filesWithSelfConflict
                 this.selfConflictOccurrenceAvg = this.selfConflictOccurrenceAvg / this.selfConflicts
+                this.lastSelfConflictToMergeAvg = this.lastSelfConflictToMergeAvg / this.selfConflicts
             }
 
             console.log(this.chunkLines)

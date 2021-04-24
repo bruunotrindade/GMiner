@@ -28,10 +28,13 @@ const MERGE_ATTRIBUTES = {
     "Self Conflicts": "selfConflicts",
     "Files With Self Conflict": "filesWithSelfConflict",
     "Time between Self Conflict commits (AVG)": "selfConflictOccurrenceAvg",
+    "Time between last Self Conflict commit and Merge commit (AVG)": "lastSelfConflictToMergeAvg",
     "Chunks Per Conflicted File": "chunksPerConflictedFile",
     "Chunks Per Self Conflicted File": "chunksPerSelfConflictedFile",
     "Self Conflict Chunks Per File With Conflict": "selfConflictChunksPerFileWithConflict",
     "Self Conflict Chunks Per File With Self Conflict": "selfConflictChunksPerFileWithSelfConflict",
+    "Self Conflict Chunks Per File With Conflict (%)": "selfConflictChunksPerFileWithConflictRel",
+    "Self Conflict Chunks Per File With Self Conflict (%)": "selfConflictChunksPerFileWithSelfConflictRel",
     "AVG of Chunk Lines 1": "chunkLines.0",
     "AVG of Chunk Lines 2": "chunkLines.1",
     "Type of Conflict - modified/modified": "typesOfConflict.modified/modified",
@@ -45,7 +48,8 @@ const AUTHOR_ATTRIBUTES = {
     "Conflicts": "conflicts",
     "Self Conflicts": "selfConflicts",
     "Count when was author": "author",
-    "Time of self conflict (AVG)": "selfConflictsOccurrenceAvg"
+    "Time between self conflict commits (AVG)": "selfConflictsOccurrenceAvg",
+    "Time between last self conflict commit and merge commit (AVG)": "lastSelfConflictToMergeAvg",
 }
 
 printSoftwareInfo()
@@ -121,11 +125,11 @@ for(let rep of reps) {
         }
     })
 
-    if (!existsSync("./"+OUTPUT_FOLDER)){
-        mkdirSync("./"+OUTPUT_FOLDER);
+    if (!existsSync(OUTPUT_FOLDER)){
+        mkdirSync(OUTPUT_FOLDER);
     }
     console.log("SIZE = " + lines.length)
-    writeFileSync(`./${OUTPUT_FOLDER}/${repos.name}.csv`, lines, (err) => { if(err) return console.log(err) })
+    writeFileSync(`${OUTPUT_FOLDER}/${repos.name}.csv`, lines, (err) => { if(err) return console.log(err) })
 
     // =====================================
 
@@ -152,6 +156,6 @@ for(let rep of reps) {
     }
 
     console.log("SIZE = " + lines.length)
-    writeFileSync(`./${OUTPUT_FOLDER}/${repos.name}-authors.csv`, lines, (err) => { if(err) return console.log(err) })
+    writeFileSync(`${OUTPUT_FOLDER}/${repos.name}-authors.csv`, lines, (err) => { if(err) return console.log(err) })
     // =====================================
 }
